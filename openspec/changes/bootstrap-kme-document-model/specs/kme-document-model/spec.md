@@ -39,3 +39,46 @@ KME MUST NOT expose third-party parser AST types as its public contract.
 - **WHEN** kdp, kle, kcf, or KatanA consumes KME output
 - **THEN** it receives KME-owned DTOs
 - **THEN** it does not depend on Comrak, pulldown-cmark, markdown-rs, or vendor parser internals
+
+### Requirement: KME is the cross-repository starting point
+
+KME SHALL define the document model and metadata contracts before downstream preview, editor, export, or integration work proceeds.
+
+#### Scenario: Downstream repository starts KME adoption
+
+- **WHEN** kdp, kle, kcf, or KatanA starts KME adoption work
+- **THEN** KME public DTOs are available
+- **THEN** KME metadata target resolution is available when metadata behavior is required
+- **THEN** the downstream repository does not create its own document model or metadata schema as a substitute
+
+### Requirement: KCF remains pending until KME and widget boundaries stabilize
+
+KME SHALL treat kcf integration as downstream work that waits for KME, KAL, KUW, preview, and editor contracts to stabilize.
+
+#### Scenario: KCF export quality gate is resumed
+
+- **WHEN** kcf resumes KME-related export or GUI quality gate work
+- **THEN** KME document model scope is already defined
+- **THEN** KME metadata schema is already defined
+- **THEN** KUW or an explicit widget boundary is defined for shared UI behavior
+- **THEN** kcf does not define KME metadata or UI widget behavior on its own
+
+### Requirement: KME tracks missing KUW as a planning risk
+
+KME SHALL track `katana-ui-widget` absence as a cross-repository planning risk.
+
+#### Scenario: Preview or KatanA integration needs shared UI parts
+
+- **WHEN** preview, metadata display, tabs, toolbar, copy, or edit affordance work is planned
+- **THEN** the work identifies whether it belongs in KUW
+- **THEN** KatanA or kdp does not silently absorb shared widget responsibilities
+
+### Requirement: KME handoff is implementation-ready
+
+KME SHALL provide enough OpenSpec detail for another session to continue without relying on chat history.
+
+#### Scenario: New session starts KME work
+
+- **WHEN** a new session begins work in `katana-markdown-engine`
+- **THEN** it can read `handoff.md`, `tasks.md`, and `spec.md`
+- **THEN** it can identify current completion state, next tasks, blockers, and verification commands

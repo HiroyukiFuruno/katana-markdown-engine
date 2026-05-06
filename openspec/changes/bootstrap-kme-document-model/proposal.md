@@ -1,30 +1,52 @@
 ## Why
 
-KatanAのMarkdown previewとexportは、既存libraryのASTやrenderer都合に引っ張られ、表（table/grid）、badge、脚注、alert、絵文字、コード同期、PDFページング、LLM注釈を同じ仕様で扱いにくい。
+KatanAのMarkdown preview、editor支援、exportは、現状では既存parserやrendererの都合に寄っている。
 
-KMEはMarkdown文書モデルを自前で所有し、preview、editor、exportが同じ文書解釈を共有できるようにする。
+そのため、表（table/grid）、README badge、alert、description list、脚注、絵文字、diagram、math、metadata、PDFページング、LLM注釈を同じ文書仕様として扱いにくい。
 
-ただし、repository分離の優先順位ではP1とし、P0 `katana-ast-lint` の共通品質ゲートを先に前提化する。
+KMEはMarkdownをHTMLへ変換する部品ではない。KMEは、KatanA ecosystemが共有するMarkdown文書モデルの正本を持つlibraryである。
+
+この変更では、KME repositoryを「別セッションが継続開発できる初期状態」まで立ち上げる。
 
 ## What Changes
 
-- KME文書モデルを定義する
-- metadata schemaを定義する
-- metadata targetの位置解決APIを定義する
-- KatanA現行fixtureをモデル化する
-- diagram/math/emojiは描画実装ではなく構造ノードとrenderer interfaceとして扱う
-- 共通AST lintをKMEの品質ゲートとして採用する
+### 初期構築で完了させること
+
+- `katana-markdown-engine` をRust library crateとして成立させる。
+- CLIを提供せず、public APIをlibraryに限定する。
+- `KmeDocument`、`KmeNode`、`KmeNodeKind`、`SourceSpan`、`MetadataDocument`、`MetadataTarget`、`TargetResolution` をpublic DTOとして定義する。
+- 内部parser moduleを作るが、parser内部型をpublic contractへ出さない。
+- source range、line-column、raw snippet、text fingerprintをnodeへ持たせる。
+- heading、paragraph、HTML block、README badge row、list、code block、diagram role、table、blockquote、alert、description listを初期nodeとして扱う。
+- metadataをMarkdown本文へ埋め込まず、外部metadata documentとして扱う。
+- metadata targetをstable node idまたはfingerprintで再解決し、unresolvedを削除せず返す。
+- `katana-ast-lint` をKMEのAST lint品質ゲートとして採用する。
+- `just check`、`lefthook`、CI、repo-local skillを横展開し、開発開始できる状態にする。
+
+### 初期構築では完了させないこと
+
+- CommonMark完全準拠。
+- parser engineの最終選定。
+- full fixtureの完全モデル化。
+- table cell単位のsource range。
+- emoji shortcodeとUnicodeの専用node。
+- release workflowとcrates.io公開。
+- kdp、kle、kcf、KatanAへの組み込み。
 
 ## Capabilities
 
 ### New Capabilities
 
-- `kme-document-model`: Markdown文書をKME独自モデルとして表現する
-- `kme-metadata-target`: 外部metadata targetを文書モデルへ解決する
+- `kme-document-model`: Markdown文書をrenderer-neutralなKME所有DTOとして表現する。
+- `kme-source-mapping`: nodeごとにsource range、line-column、raw snippet、fingerprintを保持する。
+- `kme-metadata-target`: 外部metadata targetを文書modelへ解決する。
+- `kme-quality-gate`: KAL AST lint、Clippy、tests、OpenSpecをまとめて検証する。
+- `kme-handoff-ready`: 別セッションがOpenSpecから次作業を判断できる。
 
 ## Impact
 
-- 新規crate構成の定義
-- fixture contractの追加
-- `katana-ast-lint`: 共通AST lint gate
-- kdp/kle/kcf/KatanAが参照するpublic DTOの定義
+- 新規crate構成を追加する。
+- `.github/workflows/test-and-build.yml` と `release-preflight.yml` を追加する。
+- `just check` をKME標準品質ゲートにする。
+- KAL `katana-ast-lint = "0.1.0"` をdev-dependencyとして使う。
+- KME public DTOが、後続のkdp、kle、kcf、KatanA統合の参照点になる。

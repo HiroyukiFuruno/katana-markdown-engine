@@ -1,57 +1,179 @@
 ## Context
 
-KME v0はCommonMark完全準拠を先に狙わない。現在KatanAが実現できているMarkdown挙動を落とさず、文書構造として扱えることを優先する。
+KME v0は、CommonMark完全準拠を先に狙わない。
+
+優先するのは、現在KatanAで実現できているMarkdown挙動を文書モデルとして失わず、preview、editor、exportが同じ解釈を共有できることである。
+
+KMEはP1の分離対象であり、P0 `katana-ast-lint` の共通品質ゲートを前提にする。
 
 ## Goals
 
-- `sample.md`、README badge、alert、description listをモデル化する。
-- 全nodeにstable id、source range、line-column、byte offset、raw snippetを持たせる。
-- metadata targetをnodeへ解決し、移動、衝突、unresolvedを返す。
-- Mermaid、draw.io、PlantUML、math、emojiを構造として保持する。
+- KMEを単独repositoryのRust library crateとして成立させる。
+- `sample.md`、README badge、alert、description listを初期fixtureとして扱う。
+- 全nodeにstable id、source range、line-column、byte offset、raw snippet、fingerprintを持たせる。
+- metadata targetをnodeへ解決し、resolved、moved、unresolvedを返す。
+- Mermaid、draw.io、PlantUML、math、emojiを最終的に構造として保持できるDTO境界を作る。
 - 既存parserのASTをpublic contractにしない。
-- P0 `katana-ast-lint` を品質ゲートとして使う。
+- `katana-ast-lint` を品質ゲートとして使う。
+- 別セッションがOpenSpecを読んで、次に何を実装するか判断できる状態にする。
 
 ## Non-Goals
 
 - KME v0でMarkdown全仕様を完全実装すること。
 - HTML/PDF/PNG/JPG出力をKMEが直接担当すること。
-- Floemやkcfなど利用側実装へ依存すること。
+- Floem、egui、kcf、kdp、kle、KatanAへ依存すること。
 - metadataをMarkdown本文へ埋め込むこと。
+- CLIを提供すること。
 
-## Decisions
+## Current Bootstrap State
 
-### Document Model First
+初期構築では、以下の実装を入れる。
 
-KMEはHTML変換ではなく文書モデルを正本にする。HTML生成、preview描画、PDFページングは利用側がKMEモデルを消費して行う。
+- crate: `katana-markdown-engine`
+- library name: `katana_markdown_engine`
+- public entry point:
+  - `parse_markdown(MarkdownInput) -> Result<KmeDocument, KmeError>`
+  - `reconcile_metadata_targets(old, new, metadata) -> Vec<TargetResolution>`
+- module boundary:
+  - `document`: public document DTO
+  - `source`: source mapping DTO
+  - `metadata`: external metadata DTO and resolver
+  - `parser`: internal parser implementation
+  - `input`: flexible input entry
+  - `error`: public error type
+- quality:
+  - `just check`
+  - KAL AST lint via `tests/repository_ast_lint.rs`
+  - `lefthook`
+  - CI matrix
+  - release preflight job
 
-### P0 Quality Gate
+## Public Contract
 
-KMEはP1として実装する。P0 `katana-ast-lint` の共通ruleとrepository adapterを使い、KME固有の一時lintや除外設定で品質ゲートを代替しない。
+KME public DTOはKMEが所有する。第三者parserのAST型を公開しない。
 
-### Lossless-leaning Source Mapping
-
-AST単位コピー・編集とmetadata更新のため、nodeは元テキスト断片とsource rangeを保持する。完全なformatterではなく、編集対象範囲を安全に特定できることを優先する。
-
-### Metadata Resolution
-
-KMEは旧本文、新本文、metadataを受け取り、targetの再対応結果を返す。復元できないtargetはunresolvedとして返し、削除しない。
-
-### Renderer Interface
-
-diagram/mathは非同期renderer interfaceへ委譲する。rendererが無い、失敗した、未対応の場合はraw blockとして扱う。
-
-## Public Model Candidates
+### Document DTO
 
 - `KmeDocument`
+  - `path`
+  - `fingerprint`
+  - `nodes`
 - `KmeNode`
-- `KmeNodeId`
-- `SourceRange`
+  - `id`
+  - `kind`
+  - `source`
+  - `children`
+- `KmeNodeKind`
+  - `Heading`
+  - `Paragraph`
+  - `HtmlBlock`
+  - `List`
+  - `CodeBlock`
+  - `Table`
+  - `BlockQuote`
+  - `Alert`
+  - `DescriptionList`
+  - `ThematicBreak`
+  - `RawBlock`
+
+### Source DTO
+
+- `ByteRange`
+- `LineColumn`
 - `LineColumnRange`
 - `RawSnippet`
+- `TextFingerprint`
+- `SourceSpan`
+
+### Metadata DTO
+
 - `MetadataDocument`
+- `MetadataEntry`
 - `MetadataTarget`
+- `ContextAnchor`
 - `TargetResolution`
+- `TargetResolutionKind`
 - `UnresolvedTarget`
-- `DiagramNode`
-- `HighlightedSpan`
-- `AstLintAdapterConfig`
+
+## Parser Boundary
+
+初期parserは最終仕様ではない。
+
+初期parserの責務は、public DTOとsource mappingの契約を固定し、fixture testを通せる最小の構造化を行うことである。
+
+後続でparser engineを差し替えても、public DTOとtest contractを壊してはならない。
+
+## Fixture Strategy
+
+初期構築では軽量fixtureを `tests/fixtures/` に置く。
+
+後続では、以下をcanonical fixtureとして固定する。
+
+- `katana/assets/fixtures/sample.md`
+- `katana/README.md` 冒頭のbadge列
+- `katana/assets/fixtures/sample_basic.md` のalert記法
+- description list fixture
+
+canonical fixtureは、コピー、submodule、sync scriptのいずれかで再現可能にする。絶対パスに依存したtestをrepository標準にしない。
+
+## Metadata Resolution
+
+metadataはMarkdown本文へ埋め込まない。
+
+targetは以下を持つ。
+
+- file path
+- node id
+- byte range
+- line-column range
+- text fingerprint
+- before / after context
+
+KMEは、旧document、新document、metadataを受け取り、以下を返す。
+
+- `Resolved`: node idで直接解決できた
+- `Moved`: node idは変わったがfingerprintで再対応できた
+- `Unresolved`: 再対応できなかった。metadata entryは削除しない
+
+## Quality Gate
+
+`just check` を標準入口にする。
+
+`just check` は以下を実行する。
+
+- rustfmt check
+- Clippy
+- KAL AST lint
+- unit / integration tests
+- OpenSpec strict validation
+
+GitHub branch protectionで要求するcheckはKML相当にする。
+
+- `Test and Build (macos-latest)`
+- `Test and Build (ubuntu-latest)`
+- `Test and Build (windows-latest)`
+- `preflight`
+
+## Next Session Contract
+
+次セッションは、最初に以下を読む。
+
+1. `openspec/changes/bootstrap-kme-document-model/handoff.md`
+2. `openspec/changes/bootstrap-kme-document-model/tasks.md`
+3. `openspec/changes/bootstrap-kme-document-model/specs/kme-document-model/spec.md`
+4. `docs/quality-gates.md`
+
+次セッションの最初の実装候補は以下。
+
+1. table/gridのcell単位source range
+2. emoji shortcodeとUnicode保持の専用node
+3. canonical fixture同期
+4. release workflow
+
+## Risks
+
+- OpenSpecが薄いと、別セッションがparser精度、metadata、品質ゲートのどれを進めるべきか判断できない。
+- parser内部型を公開すると、後続でparser差し替えができなくなる。
+- fixtureを軽量fixtureのまま正本扱いすると、KatanA現行挙動の踏襲を検証できない。
+- metadataをnode idだけで解決すると、保存後の移動に弱い。
+- KAL AST lintを外すと、repository分離後に品質基準が割れる。

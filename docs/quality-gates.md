@@ -10,6 +10,7 @@
 | `just test` | Run unit and integration tests | Yes |
 | `just openspec-check` | Validate active OpenSpec change | Yes |
 | `just check` | Run all local gates above | Yes |
+| `preflight` | Run PR release-readiness checks in GitHub Actions | Yes |
 
 ## AST Lint
 
@@ -20,5 +21,7 @@ KME must not introduce a separate local lint baseline to avoid the shared rules.
 
 ## Release Readiness
 
-KME is not release-wired yet. Before adding release workflow, keep `just check`
-green and extend this document with package and publication checks.
+KME has a release-readiness preflight, but crates.io publishing is not wired yet.
+Keep `just check` green locally. The `preflight` job also runs
+`cargo package --locked --allow-dirty` and
+`cargo publish --dry-run --locked --allow-dirty`.
