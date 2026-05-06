@@ -1,5 +1,5 @@
 use katana_markdown_engine::{
-    CodeBlockRole, DiagramKind, HtmlBlockRole, KmeNodeKind, MarkdownInput, parse_markdown,
+    CodeBlockRole, DiagramKind, HtmlBlockRole, KmeNode, KmeNodeKind, MarkdownInput, parse_markdown,
 };
 
 #[test]
@@ -78,5 +78,52 @@ fn parses_description_list_as_owned_node() {
     assert!(matches!(
         &lists[0].kind,
         KmeNodeKind::DescriptionList { items } if items.len() == 2
+    ));
+}
+
+#[test]
+fn keeps_table_cell_source_ranges() {
+    let document = parse_markdown(MarkdownInput::from_content(
+        "inline-table.md",
+        "| Name | Value |\n| :--- | ---: |\n| Alpha | 123 |\n",
+    ))
+    .unwrap();
+    let table = document
+        .nodes_by_kind(|kind| matches!(kind, KmeNodeKind::Table(_)))
+        .remove(0);
+
+    let KmeNodeKind::Table(table) = &table.kind else {
+        panic!("expected table node");
+    };
+    let value_cell = &table.rows[2].cells[1];
+
+    assert_eq!(value_cell.text, "123");
+    assert_eq!(value_cell.source.raw.text, " 123 ");
+    assert_eq!(value_cell.source.line_column_range.start.line, 3);
+    assert_eq!(value_cell.source.line_column_range.start.column, 10);
+}
+
+#[test]
+fn keeps_shortcode_and_unicode_emoji_as_child_nodes() {
+    let document = parse_markdown(MarkdownInput::from_content(
+        "emoji.md",
+        "# Title :sparkles:\n\nHello 🚀\n",
+    ))
+    .unwrap();
+    let emoji_nodes = document
+        .nodes
+        .iter()
+        .flat_map(|node| node.children.iter())
+        .filter(|node| matches!(node.kind, KmeNodeKind::Emoji(_)))
+        .collect::<Vec<&KmeNode>>();
+
+    assert_eq!(emoji_nodes.len(), 2);
+    assert!(matches!(
+        &emoji_nodes[0].kind,
+        KmeNodeKind::Emoji(emoji) if emoji.value == ":sparkles:" && emoji.shortcode.as_deref() == Some("sparkles")
+    ));
+    assert!(matches!(
+        &emoji_nodes[1].kind,
+        KmeNodeKind::Emoji(emoji) if emoji.value == "🚀" && emoji.shortcode.is_none()
     ));
 }

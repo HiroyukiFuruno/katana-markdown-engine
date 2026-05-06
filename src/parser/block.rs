@@ -1,6 +1,5 @@
 use crate::{
     CodeBlockRole, DescriptionItem, DiagramKind, HeadingNode, HtmlBlockRole, KmeNodeKind, ListNode,
-    TableAlignment, TableCell, TableNode, TableRow,
 };
 
 pub(crate) fn heading(line: &str) -> Option<KmeNodeKind> {
@@ -64,28 +63,6 @@ pub(crate) fn list_node(lines: &[String]) -> ListNode {
     }
 }
 
-pub(crate) fn table_node(lines: &[String]) -> TableNode {
-    let alignments = lines
-        .get(1)
-        .map(|line| {
-            split_table_cells(line)
-                .iter()
-                .map(|cell| alignment(cell))
-                .collect()
-        })
-        .unwrap_or_default();
-    let rows = lines
-        .iter()
-        .map(|line| TableRow {
-            cells: split_table_cells(line)
-                .iter()
-                .map(|cell| TableCell { text: cell.clone() })
-                .collect(),
-        })
-        .collect();
-    TableNode { alignments, rows }
-}
-
 pub(crate) fn description_items(lines: &[String]) -> Vec<DescriptionItem> {
     lines
         .chunks(2)
@@ -112,28 +89,6 @@ pub(crate) fn ordered_list_line(line: &str) -> bool {
         return false;
     };
     !number.is_empty() && number.chars().all(|it| it.is_ascii_digit()) && rest.starts_with(' ')
-}
-
-pub(crate) fn table_separator(line: &str) -> bool {
-    split_table_cells(line)
-        .iter()
-        .all(|cell| cell.chars().all(|it| matches!(it, '-' | ':' | ' ')))
-}
-
-fn split_table_cells(line: &str) -> Vec<String> {
-    line.trim_matches('|')
-        .split('|')
-        .map(|cell| cell.trim().to_string())
-        .collect()
-}
-
-fn alignment(cell: &str) -> TableAlignment {
-    match (cell.starts_with(':'), cell.ends_with(':')) {
-        (true, true) => TableAlignment::Center,
-        (true, false) => TableAlignment::Left,
-        (false, true) => TableAlignment::Right,
-        (false, false) => TableAlignment::Unspecified,
-    }
 }
 
 fn task_marker(line: &str) -> Option<String> {

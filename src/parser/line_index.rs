@@ -47,22 +47,40 @@ impl LineIndex {
         let first = &self.lines[start_line];
         let last = &self.lines[end_line - 1];
         let end = last.end;
+        self.source_span_for_byte_range(source, first.start, end)
+    }
+
+    pub fn source_span_for_byte_range(
+        &self,
+        source: &str,
+        start_offset: usize,
+        end_offset: usize,
+    ) -> SourceSpan {
+        let start = self.line_column(start_offset);
+        let end = self.line_column(end_offset);
         SourceSpan {
             byte_range: ByteRange {
-                start: first.start,
-                end,
+                start: start_offset,
+                end: end_offset,
             },
-            line_column_range: LineColumnRange {
-                start: LineColumn {
-                    line: first.number,
-                    column: 1,
-                },
-                end: LineColumn {
-                    line: last.number,
-                    column: last.text.chars().count() + 1,
-                },
-            },
-            raw: RawSnippet::new(source[first.start..end].to_string()),
+            line_column_range: LineColumnRange { start, end },
+            raw: RawSnippet::new(source[start_offset..end_offset].to_string()),
         }
     }
+
+    fn line_column(&self, offset: usize) -> LineColumn {
+        let line = self
+            .lines
+            .iter()
+            .find(|line| line.start <= offset && offset <= line.end)
+            .unwrap_or_else(|| self.lines.last().expect("line index must not be empty"));
+        LineColumn {
+            line: line.number,
+            column: source_column(&line.text, offset - line.start),
+        }
+    }
+}
+
+fn source_column(line: &str, byte_offset: usize) -> usize {
+    line[..byte_offset].chars().count() + 1
 }

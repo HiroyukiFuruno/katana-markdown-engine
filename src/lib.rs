@@ -14,8 +14,9 @@ pub mod source;
 mod parser;
 
 pub use document::{
-    CodeBlockRole, DescriptionItem, DiagramKind, HeadingNode, HtmlBlockRole, KmeDocument, KmeNode,
-    KmeNodeId, KmeNodeKind, ListNode, TableAlignment, TableCell, TableNode, TableRow,
+    CodeBlockRole, DescriptionItem, DiagramKind, EmojiNode, HeadingNode, HtmlBlockRole,
+    KmeDocument, KmeNode, KmeNodeId, KmeNodeKind, ListNode, TableAlignment, TableCell, TableNode,
+    TableRow,
 };
 pub use error::KmeError;
 pub use input::MarkdownInput;

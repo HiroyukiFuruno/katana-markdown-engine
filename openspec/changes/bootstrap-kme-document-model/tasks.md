@@ -60,8 +60,8 @@
 - [x] 2.2 README badgeをHTML block / badge rowとしてモデル化する
 - [x] 2.3 alertとdescription listをモデル化する
 - [x] 2.4 tableに行、列、cell、alignmentを持たせる
-- [ ] 2.5 table/gridのcell単位source rangeを持たせる
-- [ ] 2.6 emojiを削除せず、Unicodeとshortcode情報を保持する専用nodeを追加する
+- [x] 2.5 table/gridのcell単位source rangeを持たせる
+- [x] 2.6 emojiを削除せず、Unicodeとshortcode情報を保持する専用nodeを追加する
 - [ ] 2.7 footnote、image、link、HTML inline、math inlineをKatanA現行仕様として棚卸しする
 - [ ] 2.8 `katana/assets/fixtures/sample.md`、`sample_basic.md`、`katana/README.md` badgeをcanonical fixtureとして同期する
 

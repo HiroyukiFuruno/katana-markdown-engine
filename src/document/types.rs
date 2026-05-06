@@ -24,6 +24,7 @@ pub struct KmeNode {
 pub enum KmeNodeKind {
     Heading(HeadingNode),
     Paragraph,
+    Emoji(EmojiNode),
     HtmlBlock(HtmlBlockRole),
     List(ListNode),
     CodeBlock(CodeBlockRole),
@@ -39,6 +40,12 @@ pub enum KmeNodeKind {
 pub struct HeadingNode {
     pub level: u8,
     pub text: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct EmojiNode {
+    pub value: String,
+    pub shortcode: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -90,6 +97,7 @@ pub struct TableRow {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct TableCell {
     pub text: String,
+    pub source: SourceSpan,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

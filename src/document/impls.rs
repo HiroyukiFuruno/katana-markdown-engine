@@ -42,6 +42,7 @@ impl KmeNodeKind {
         match self {
             Self::Heading(_) => "heading",
             Self::Paragraph => "paragraph",
+            Self::Emoji(_) => "emoji",
             Self::HtmlBlock(_) => "html-block",
             Self::List(_) => "list",
             Self::CodeBlock(_) => "code-block",

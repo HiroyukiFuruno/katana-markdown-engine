@@ -1,5 +1,6 @@
 use super::block;
 use super::engine::ParserCursor;
+use super::table;
 use crate::KmeNodeKind;
 
 impl ParserCursor<'_> {
@@ -27,12 +28,16 @@ impl ParserCursor<'_> {
     }
 
     pub(super) fn table(&mut self) -> KmeNodeKind {
-        let mut lines = Vec::new();
+        let mut rows = Vec::new();
         while self.line < self.index.lines().len() && self.current().text.contains('|') {
-            lines.push(self.current().text.clone());
+            let line = self.current();
+            rows.push(table::table_row(&line.text, line.start, |start, end| {
+                self.index
+                    .source_span_for_byte_range(self.source, start, end)
+            }));
             self.line += 1;
         }
-        KmeNodeKind::Table(block::table_node(&lines))
+        KmeNodeKind::Table(table::table_node(rows))
     }
 
     pub(super) fn block_quote(&mut self) -> KmeNodeKind {
@@ -82,7 +87,7 @@ impl ParserCursor<'_> {
     pub(super) fn is_table_start(&self) -> bool {
         self.line + 1 < self.index.lines().len()
             && self.current().text.contains('|')
-            && block::table_separator(&self.index.lines()[self.line + 1].text)
+            && table::table_separator(&self.index.lines()[self.line + 1].text)
     }
 
     pub(super) fn is_description_start(&self) -> bool {
