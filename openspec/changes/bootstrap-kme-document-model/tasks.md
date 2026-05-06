@@ -62,13 +62,13 @@
 - [x] 2.4 tableに行、列、cell、alignmentを持たせる
 - [x] 2.5 table/gridのcell単位source rangeを持たせる
 - [x] 2.6 emojiを削除せず、Unicodeとshortcode情報を保持する専用nodeを追加する
-- [ ] 2.7 footnote、image、link、HTML inline、math inlineをKatanA現行仕様として棚卸しする
-- [ ] 2.8 `katana/assets/fixtures/sample.md`、`sample_basic.md`、`katana/README.md` badgeをcanonical fixtureとして同期する
+- [x] 2.7 footnote、image、link、HTML inline、math inlineをKatanA現行仕様として棚卸しする
+- [x] 2.8 `katana/assets/fixtures/sample.md`、`sample_basic.md`、`katana/README.md` badgeをcanonical fixtureとして同期する
 
 ### Definition of Done
 
-- [ ] KatanA現行fixtureの主要構造がKME nodeとして固定されている
-- [ ] node種別、source range、raw snippet、fingerprintがfixture testで固定されている
+- [x] KatanA現行fixtureの主要構造がKME nodeとして固定されている
+- [x] node種別、source range、raw snippet、fingerprintがfixture testで固定されている
 - [ ] KMEのpublic DTOだけでkdp / kle / kcf / KatanAが参照できる
 
 ## 3. Metadata Target Resolution
