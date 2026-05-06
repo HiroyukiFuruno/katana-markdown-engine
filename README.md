@@ -14,3 +14,32 @@ KMEはHTML変換器ではありません。KatanAのプレビュー（preview）
 - metadataはMarkdown本文へ埋め込まず、外部ファイルとして扱います。
 - KMEはkcf、kdp、KatanA、editorへ依存しません。
 - KME固有の一時lintを作らず、共通AST lintを品質ゲートにします。
+
+## 開発入口
+
+```bash
+just check
+```
+
+`just check` はformat、Clippy、KAL AST lint、test、OpenSpec検証を実行します。
+
+## 最小利用例
+
+```rust
+use katana_markdown_engine::{MarkdownInput, parse_markdown};
+
+let document = parse_markdown(MarkdownInput::from_content(
+    "README.md",
+    "# Title\n\nBody\n",
+))?;
+assert_eq!(document.nodes.len(), 2);
+# Ok::<(), katana_markdown_engine::KmeError>(())
+```
+
+## 現在の初期実装範囲
+
+- renderer-neutralな `KmeDocument` / `KmeNode` / `KmeNodeKind`
+- source range、line-column、raw snippet、text fingerprint
+- heading、paragraph、HTML block、badge row、list、code block、diagram block、table、blockquote、alert、description list
+- 外部metadata targetと再解決API
+- `katana-ast-lint` を使ったrepository AST lint
