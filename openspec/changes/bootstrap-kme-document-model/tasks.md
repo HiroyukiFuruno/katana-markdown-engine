@@ -138,3 +138,36 @@
 - [x] 6.3 KAL AST lintのKME adapterで検査できることを確認する
 - [x] 6.4 `scripts/openspec validate "bootstrap-kme-document-model" --strict` を実行する
 - [x] 6.5 親OpenSpecと周辺repo OpenSpecを再検証する
+
+## 7. v0.1.0分割計画
+
+`bootstrap-kme-document-model` は初期立ち上げの親計画として残す。
+
+未完了項目は、`docs/roadmap.md` と次のOpenSpec changeへ分割して進める。
+
+- `stabilize-release-readiness-gates`
+  - 1.7 branch protection
+  - release前検査
+  - `just check` / `release-check`
+- `stabilize-canonical-fixtures`
+  - 2.7 footnote、image、link、HTML inline、math inlineの棚卸し
+  - 2.8 canonical fixture同期
+- `finalize-metadata-resolution-contract`
+  - 3.5 conflict状態
+  - 3.6 metadata用途fixture
+  - 3.7 editor保存時DTO
+- `lock-parser-adapter-strategy`
+  - 4.1から4.4のparser strategy
+- `prepare-manual-harness`
+  - release前の目視確認環境
+  - `just harness-up`
+- `prepare-downstream-handoff-contract`
+  - 5.1から5.5のcross-repo handoff
+- `publish-v0-1-0-release`
+  - 全change完了後の `v0.1.0` GitHub Releaseとcrates.io公開
+
+### Tasks
+
+- [x] 7.1 `docs/roadmap.md` へ `v0.1.0` までの順序とbranch戦略を明記する
+- [x] 7.2 未完了項目を小さなOpenSpec changeへ分割する
+- [x] 7.3 `v0.1.0` までは全change完了前に公開しない条件を明記する

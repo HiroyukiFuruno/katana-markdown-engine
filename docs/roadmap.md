@@ -1,0 +1,151 @@
+# KME v0.1.0 Roadmap
+
+## 結論
+
+`katana-markdown-engine`（KME）は、`v0.1.0` 初回リリースまで小さなOpenSpec changeを順番に完了する。
+
+`v0.1.0` まではcrates.ioへ公開しない。すべての実装、検証、目視確認、受け渡し条件が完了した後にだけ、`v0.1.0` を公開する。
+
+## KMEの責務
+
+KMEはMarkdownをHTMLへ変換する部品ではない。
+
+KMEは、KatanA ecosystemで共有するMarkdown文書モデル、source range、line-column、raw snippet、fingerprint、外部metadata解決を所有するlibraryである。
+
+KMEは次を所有しない。
+
+- 製品CLI
+- 製品UI
+- HTML/PDF/PNG/JPG出力
+- Floem、egui、KatanA workspace state
+- kdp、kle、kcf、KatanA本体の統合処理
+
+## v0.1.0までのchange順序
+
+### 1. `stabilize-release-readiness-gates`
+
+CI、release前検査、branch protection、`just check` / `release-check` の対応を固定する。
+
+このchangeでは、KMLのrelease前検査を参考にする。ただしKMEはlibrary-onlyなので、npm、PyPI、Homebrew、binary artifact、MCPB、editor extensionの検査は持ち込まない。
+
+完了条件:
+
+- `just check` が標準品質ゲートとして維持されている
+- `release-check` が `just check`、`cargo package --locked --allow-dirty`、`cargo publish --dry-run --locked --allow-dirty` を含む
+- GitHub Actionsの `release-preflight` が同じ検査を実行する
+- `master` branch protectionの必須checkが文書化されている
+
+### 2. `stabilize-canonical-fixtures`
+
+KatanA現行fixture、README badge、alert、description listをKMEの正本fixtureとして固定する。
+
+完了条件:
+
+- canonical fixtureの同期方法が決まっている
+- node種別、source range、raw snippet、fingerprintがテストで固定されている
+- 絶対パスに依存しない検証になっている
+
+### 3. `finalize-metadata-resolution-contract`
+
+metadata解決のpublic contractを固定する。
+
+完了条件:
+
+- `Resolved`、`Moved`、`Unresolved`、`Conflict` がpublic DTOとして定義されている
+- editor保存時に必要なrequest/result DTOがKME側で固定されている
+- unresolved metadataを削除しない契約がテストで固定されている
+
+### 4. `lock-parser-adapter-strategy`
+
+parser内部型をpublic contractへ出さない境界と、主要Markdown構造のparse contractを固定する。
+
+完了条件:
+
+- parser engineを差し替えてもpublic DTOが壊れない
+- table、badge、alert、description list、footnote、diagram、math、emojiのcontract testがある
+- OS依存emojiを壊すparser候補を採用しない判断基準がある
+
+### 5. `prepare-manual-harness`
+
+`just harness-up` で、KME出力を人間が目視できる開発用環境を用意する。
+
+画面上では、Markdown本文とKMEが解釈したnode一覧、選択nodeの位置情報、raw snippet、fingerprint、metadata解決状態を並べて確認できるようにする。
+
+これは製品UIではない。release前の手動品質ゲートである。
+
+完了条件:
+
+- `just harness-up` で手動確認環境を起動できる
+- KME本体はlibrary-onlyを維持している
+- 開発用harnessのbinaryやUI依存が公開crateへ混入しない
+- fixtureごとの目視確認手順と確認結果の記録方法がある
+
+### 6. `prepare-downstream-handoff-contract`
+
+kdp、kle、kcf、KatanAへ渡すpublic DTO境界と受け渡し条件を固定する。
+
+完了条件:
+
+- downstreamがKME内部parser型へ依存しない条件が明文化されている
+- downstreamが独自metadata schemaを作らない条件が明文化されている
+- kcf pending解除条件がKME側から見て明確である
+
+### 7. `publish-v0-1-0-release`
+
+全change完了後に `v0.1.0` のGitHub Releaseとcrates.io公開を実施する。
+
+完了条件:
+
+- 全OpenSpec changeが完了している
+- `just check` が通っている
+- `release-check` が通っている
+- `cargo package --locked --allow-dirty` が通っている
+- `cargo publish --dry-run --locked --allow-dirty` が通っている
+- `CARGO_REGISTRY_TOKEN` がGitHub secretとして登録されている
+- GitHub Releaseとcrates.io公開後のverify手順が通っている
+
+## v0.1.0以降のbranch戦略
+
+KMEは `v0.1.0` 以降、KML同様のbranch戦略を正式採用する。ただしKMEの既定ブランチは `master` を維持する。
+
+- 既定ブランチ: `master`
+- release統合ブランチ: `release/vX.Y.Z`
+- 補助ブランチ: `feature/vX.Y.Z-<short-slug>`
+- release PR: `release/vX.Y.Z` から `master` へ作成する
+- `fix/vX.Y.Z-*`、`chore/vX.Y.Z-*`、`release-vX.Y.Z` は使わない
+- merge時に `--admin` は使わない
+- merge後はbranch hygieneを行う
+
+## リリース前の必須検証
+
+各change完了時:
+
+```bash
+cd /Users/hiroyuki_furuno/works/private/katana-markdown-engine
+scripts/openspec validate "<change-name>" --strict
+just check
+```
+
+`v0.1.0` 公開直前:
+
+```bash
+cd /Users/hiroyuki_furuno/works/private/katana-markdown-engine
+just check
+cargo package --locked --allow-dirty
+cargo publish --dry-run --locked --allow-dirty
+```
+
+手動品質ゲート:
+
+```bash
+cd /Users/hiroyuki_furuno/works/private/katana-markdown-engine
+just harness-up
+```
+
+## 進めないこと
+
+- 全change完了前に `v0.1.0` を公開しない
+- KMEに製品CLIを追加しない
+- KMEに製品UIを追加しない
+- KMEでHTML/PDF出力を担当しない
+- downstream側の都合でKME public DTOへparser内部型を漏らさない

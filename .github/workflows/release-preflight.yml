@@ -49,11 +49,5 @@ jobs:
         with:
           tool: just
 
-      - name: Quality gate
-        run: just check
-
-      - name: Package
-        run: cargo package --locked --allow-dirty
-
-      - name: Dry-run publish
-        run: cargo publish --dry-run --locked --allow-dirty
+      - name: Release readiness gate
+        run: just release-check

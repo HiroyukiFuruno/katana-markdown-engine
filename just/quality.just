@@ -18,10 +18,20 @@ ast-lint:
 test:
     cargo test --workspace --locked
 
-# Validate the active OpenSpec change
+# Validate active OpenSpec changes
 openspec-check:
-    scripts/openspec validate "bootstrap-kme-document-model" --strict
+    @for change_dir in openspec/changes/*; do \
+        [ -d "$change_dir" ] || continue; \
+        change="$(basename "$change_dir")"; \
+        [ "$change" = "archive" ] && continue; \
+        scripts/openspec validate "$change" --strict; \
+    done
 
 # Local quality gate
 check: fmt-check lint ast-lint test openspec-check
     @echo "All checks passed"
+
+# Release readiness gate without publishing
+release-check: check
+    cargo package --locked --allow-dirty
+    cargo publish --dry-run --locked --allow-dirty
