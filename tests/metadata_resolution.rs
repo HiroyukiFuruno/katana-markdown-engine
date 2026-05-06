@@ -1,6 +1,7 @@
 use katana_markdown_engine::{
-    ContextAnchor, KmeNodeKind, MarkdownInput, MetadataDocument, MetadataEntry, MetadataTarget,
-    TargetResolutionKind, parse_markdown, reconcile_metadata_targets,
+    ContextAnchor, KmeNodeKind, MarkdownInput, MetadataDocument, MetadataEntry,
+    MetadataReconcileRequest, MetadataTarget, TargetResolutionKind, parse_markdown,
+    reconcile_metadata, reconcile_metadata_targets,
 };
 use serde_json::json;
 use std::path::PathBuf;
@@ -54,6 +55,65 @@ fn resolves_metadata_target_by_fingerprint_when_node_id_changes() {
         &resolutions[0].kind,
         TargetResolutionKind::Moved { previous_node_id, .. } if previous_node_id.0 == "kme-old-id"
     ));
+}
+
+#[test]
+fn returns_conflict_when_fingerprint_matches_multiple_new_nodes() {
+    let old_document = sample_document("# Title\n\nBody text\n");
+    let new_document = sample_document("# Title\n\n# Title\n");
+    let heading = old_document
+        .nodes_by_kind(|kind| matches!(kind, KmeNodeKind::Heading(_)))
+        .remove(0);
+    let mut metadata = metadata_for_node("title-note", &old_document.path, heading);
+    metadata.entries[0].target.node_id.0 = "kme-old-id".to_string();
+
+    let resolutions = reconcile_metadata_targets(&old_document, &new_document, &metadata);
+
+    assert!(matches!(
+        &resolutions[0].kind,
+        TargetResolutionKind::Conflict(conflict)
+            if conflict.previous_node_id.0 == "kme-old-id" && conflict.candidate_node_ids.len() == 2
+    ));
+}
+
+#[test]
+fn reconciles_save_time_metadata_request_without_deleting_entries() {
+    let old_document = sample_document("# Title\n\nBody text\n");
+    let new_document = sample_document("# Other\n\nBody text\n");
+    let heading = old_document
+        .nodes_by_kind(|kind| matches!(kind, KmeNodeKind::Heading(_)))
+        .remove(0);
+    let heading_id = heading.id.clone();
+    let metadata = metadata_for_node("title-note", &old_document.path, heading);
+
+    let result = reconcile_metadata(MetadataReconcileRequest {
+        old_document,
+        new_document,
+        metadata,
+    });
+
+    assert_eq!(result.metadata.entries.len(), 1);
+    assert_eq!(result.resolutions.len(), 1);
+    assert!(matches!(
+        &result.resolutions[0].kind,
+        TargetResolutionKind::Unresolved(unresolved) if unresolved.node_id == heading_id
+    ));
+}
+
+#[test]
+fn metadata_use_fixture_covers_v0_use_cases() {
+    let metadata: MetadataDocument =
+        serde_json::from_str(include_str!("fixtures/metadata_uses.json")).unwrap();
+    let payload_kinds = metadata
+        .entries
+        .iter()
+        .map(|entry| entry.payload["kind"].as_str().unwrap())
+        .collect::<Vec<&str>>();
+
+    assert_eq!(
+        payload_kinds,
+        vec!["pdf-page", "llm-annotation", "ast-edit"]
+    );
 }
 
 fn sample_document(content: &str) -> katana_markdown_engine::KmeDocument {

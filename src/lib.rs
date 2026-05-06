@@ -21,8 +21,9 @@ pub use document::{
 pub use error::KmeError;
 pub use input::MarkdownInput;
 pub use metadata::{
-    ContextAnchor, MetadataDocument, MetadataEntry, MetadataResolver, MetadataTarget,
-    TargetResolution, TargetResolutionKind, UnresolvedTarget,
+    ConflictedTarget, ContextAnchor, MetadataDocument, MetadataEntry, MetadataReconcileRequest,
+    MetadataReconcileResult, MetadataResolver, MetadataTarget, TargetResolution,
+    TargetResolutionKind, UnresolvedTarget,
 };
 pub use source::{ByteRange, LineColumn, LineColumnRange, RawSnippet, SourceSpan, TextFingerprint};
 
@@ -36,4 +37,8 @@ pub fn reconcile_metadata_targets(
     metadata: &MetadataDocument,
 ) -> Vec<TargetResolution> {
     MetadataResolver::new().reconcile(old_document, new_document, metadata)
+}
+
+pub fn reconcile_metadata(request: MetadataReconcileRequest) -> MetadataReconcileResult {
+    MetadataResolver::new().reconcile_request(request)
 }

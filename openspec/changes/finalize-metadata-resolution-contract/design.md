@@ -27,6 +27,37 @@ KMEは保存前source、保存後source、metadata documentを受け取り、tar
 - `Unresolved`: 再対応できなかったがmetadataは保持する
 - `Conflict`: 複数候補や曖昧な再対応があり、自動決定できない
 
+## Conflict Policy
+
+最小のconflict判定は、targetのnode idで直接解決できず、同じfingerprintを持つ新document nodeが複数ある場合である。
+
+この場合、KMEは候補を1つに決めない。`previous_node_id` と `candidate_node_ids` を返し、downstream側がユーザー確認や別の判断材料で扱える状態にする。
+
+## Save-time DTO
+
+editor保存時は `MetadataReconcileRequest` を入口にする。
+
+requestは次を持つ。
+
+- 保存前document
+- 保存後document
+- metadata document
+
+resultは次を持つ。
+
+- metadata document
+- targetごとのresolution
+
+KMEはunresolved metadataを削除しない。resultにmetadata documentを保持し、downstreamが勝手に消さない契約を明示する。
+
+## Metadata Use Fixture
+
+`tests/fixtures/metadata_uses.json` は、v0.1.0で想定するmetadata用途を固定する。
+
+- PDFページング
+- LLM注釈
+- AST単位copy/edit
+
 ## Verification
 
 ```bash

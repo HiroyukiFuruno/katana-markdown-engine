@@ -1,5 +1,6 @@
 use super::types::{
-    MetadataDocument, MetadataEntry, TargetResolution, TargetResolutionKind, UnresolvedTarget,
+    ConflictedTarget, MetadataDocument, MetadataEntry, MetadataReconcileRequest,
+    MetadataReconcileResult, TargetResolution, TargetResolutionKind, UnresolvedTarget,
 };
 use crate::{KmeDocument, KmeNode, TextFingerprint};
 
@@ -23,6 +24,18 @@ impl MetadataResolver {
             .collect()
     }
 
+    pub fn reconcile_request(&self, request: MetadataReconcileRequest) -> MetadataReconcileResult {
+        let resolutions = self.reconcile(
+            &request.old_document,
+            &request.new_document,
+            &request.metadata,
+        );
+        MetadataReconcileResult {
+            metadata: request.metadata,
+            resolutions,
+        }
+    }
+
     fn resolve_entry(
         &self,
         old_document: &KmeDocument,
@@ -32,8 +45,11 @@ impl MetadataResolver {
         if let Some(node) = new_document.node_by_id(&entry.target.node_id) {
             return Self::resolved(entry, node);
         }
-        if let Some(node) = self.find_by_fingerprint(new_document, &entry.target.text_fingerprint) {
-            return Self::moved(entry, node);
+        let candidates = self.find_by_fingerprint(new_document, &entry.target.text_fingerprint);
+        match candidates.as_slice() {
+            [node] => return Self::moved(entry, node),
+            [_, _, ..] => return Self::conflict(entry, &candidates),
+            [] => {}
         }
         Self::unresolved(old_document, entry)
     }
@@ -42,11 +58,12 @@ impl MetadataResolver {
         &self,
         document: &'a KmeDocument,
         fingerprint: &TextFingerprint,
-    ) -> Option<&'a KmeNode> {
+    ) -> Vec<&'a KmeNode> {
         document
             .nodes
             .iter()
-            .find(|node| &node.source.raw.fingerprint() == fingerprint)
+            .filter(|node| &node.source.raw.fingerprint() == fingerprint)
+            .collect()
     }
 
     fn resolved(entry: &MetadataEntry, node: &KmeNode) -> TargetResolution {
@@ -65,6 +82,17 @@ impl MetadataResolver {
                 previous_node_id: entry.target.node_id.clone(),
                 node_id: node.id.clone(),
             },
+        }
+    }
+
+    fn conflict(entry: &MetadataEntry, nodes: &[&KmeNode]) -> TargetResolution {
+        TargetResolution {
+            key: entry.key.clone(),
+            kind: TargetResolutionKind::Conflict(ConflictedTarget {
+                previous_node_id: entry.target.node_id.clone(),
+                candidate_node_ids: nodes.iter().map(|node| node.id.clone()).collect(),
+                reason: "multiple fingerprint matches".to_string(),
+            }),
         }
     }
 

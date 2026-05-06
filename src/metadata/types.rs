@@ -1,4 +1,4 @@
-use crate::{ByteRange, KmeNodeId, LineColumnRange, TextFingerprint};
+use crate::{ByteRange, KmeDocument, KmeNodeId, LineColumnRange, TextFingerprint};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
@@ -38,6 +38,19 @@ pub struct TargetResolution {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct MetadataReconcileRequest {
+    pub old_document: KmeDocument,
+    pub new_document: KmeDocument,
+    pub metadata: MetadataDocument,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct MetadataReconcileResult {
+    pub metadata: MetadataDocument,
+    pub resolutions: Vec<TargetResolution>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum TargetResolutionKind {
     Resolved {
         node_id: KmeNodeId,
@@ -46,7 +59,15 @@ pub enum TargetResolutionKind {
         previous_node_id: KmeNodeId,
         node_id: KmeNodeId,
     },
+    Conflict(ConflictedTarget),
     Unresolved(UnresolvedTarget),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ConflictedTarget {
+    pub previous_node_id: KmeNodeId,
+    pub candidate_node_ids: Vec<KmeNodeId>,
+    pub reason: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

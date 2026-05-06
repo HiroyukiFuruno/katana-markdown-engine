@@ -83,15 +83,15 @@
 - [x] 3.2 file path、node id、byte range、line-column、fingerprint、前後文脈をtargetに含める
 - [x] 3.3 旧本文と新本文からtarget移動を判定する
 - [x] 3.4 復元できないtargetをunresolvedとして返す
-- [ ] 3.5 conflict状態をpublic DTOとして追加する
-- [ ] 3.6 PDFページング、LLM注釈、AST単位copy/editをmetadata用途としてfixture化する
-- [ ] 3.7 editor保存時に必要なrequest/result DTOをkleがそのまま使える形へ固定する
+- [x] 3.5 conflict状態をpublic DTOとして追加する
+- [x] 3.6 PDFページング、LLM注釈、AST単位copy/editをmetadata用途としてfixture化する
+- [x] 3.7 editor保存時に必要なrequest/result DTOをkleがそのまま使える形へ固定する
 
 ### Definition of Done
 
-- [ ] 保存時metadata更新に必要なAPIがkleから利用できる
-- [ ] unresolved targetが削除されず保持される
-- [ ] conflictが未定義のままdownstreamへ流れない
+- [x] 保存時metadata更新に必要なAPIがkleから利用できる
+- [x] unresolved targetが削除されず保持される
+- [x] conflictが未定義のままdownstreamへ流れない
 
 ## 4. Parser Strategy
 
