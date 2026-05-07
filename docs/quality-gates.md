@@ -35,6 +35,9 @@ check.
 
 2026-05-07時点で、GitHubの `master` ブランチ保護（branch protection）は上記4checkを必須にしている。
 
+`master` へのpushでは、動作に影響しない文書、OpenSpec、agent手順だけの変更はCIを起動しない。
+PRでは必須checkを安定して返すため、同じ除外は入れない。
+
 ## Release Readiness
 
 KME has a release-readiness preflight and a manual `release` workflow for the
