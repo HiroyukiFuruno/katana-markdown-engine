@@ -24,6 +24,14 @@ downstream連携は、KME public DTOとmetadata APIが固定されてから始�
 - kcf: KME文書モデルとmetadata schemaが固定された後にexport/pagingへ接続する。
 - KatanA: fixture authorityと統合順序を管理する。
 
+## Decision
+
+受け渡し境界の正本は `docs/downstream-handoff.md` とする。
+
+downstreamが使ってよい入口は、`parse_markdown`、`reconcile_metadata`、`reconcile_metadata_targets` に限定する。
+
+kcf pending解除は、KME `v0.1.0` 公開、manual harness確認、KUWまたは明示的widget境界、kdp/kleの採用準備が揃った後に行う。
+
 ## Verification
 
 ```bash
