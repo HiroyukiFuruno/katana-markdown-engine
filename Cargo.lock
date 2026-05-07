@@ -264,6 +264,7 @@ name = "kme-manual-harness"
 version = "0.1.0"
 dependencies = [
  "katana-markdown-engine",
+ "serde",
  "serde_json",
 ]
 

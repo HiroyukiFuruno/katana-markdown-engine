@@ -9,6 +9,7 @@ KME SHALL provide a manual harness for release-before visual inspection.
 - **WHEN** a developer runs `just harness-up`
 - **THEN** a manual inspection environment starts
 - **THEN** the environment shows Markdown input and KME document model output
+- **THEN** the default input is `/Users/hiroyuki_furuno/works/private/katana/assets/fixtures/sample.md` when it exists
 
 ### Requirement: KME keeps the harness outside the published library
 

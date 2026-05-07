@@ -2,13 +2,13 @@
 
 ## 結論
 
-`just harness-up` は、KMEの出力をrelease前に人間が目視確認するための開発用入口である。
+`just harness-up` は、KMEの出力をrelease前に人間がGUIで目視確認するための開発用入口である。
 
 これは製品CLIでも製品UIでもない。KME本体はlibrary-onlyを維持する。
 
 ## 画面で確認するもの
 
-ターミナル画面に次を表示する。
+ブラウザ画面に次を表示する。
 
 - Markdown入力
 - KME node一覧
@@ -27,9 +27,22 @@ cd /Users/hiroyuki_furuno/works/private/katana-markdown-engine
 just harness-up
 ```
 
+既定では次のKatanA fixtureを表示する。
+
+```text
+/Users/hiroyuki_furuno/works/private/katana/assets/fixtures/sample.md
+```
+
+別のMarkdownを確認する場合は、引数で指定する。
+
+```bash
+cd /Users/hiroyuki_furuno/works/private/katana-markdown-engine
+just harness-up /Users/hiroyuki_furuno/works/private/katana/assets/fixtures/sample.md
+```
+
 ## fixture確認手順
 
-1. Markdown入力に `tests/fixtures/canonical/katana_sample_basic.md` の内容が表示されることを確認する。
+1. Markdown入力にKatanA `sample.md` の内容が表示されることを確認する。
 2. node一覧にheading、alert、table、description list、diagram、math、emojiが表示されることを確認する。
 3. 選択nodeにsource range、line-column、raw snippet、fingerprintが表示されることを確認する。
 4. metadata解決状態に `Resolved`、`Moved`、`Unresolved`、`Conflict` が表示されることを確認する。

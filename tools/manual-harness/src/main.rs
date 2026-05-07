@@ -1,173 +1,66 @@
-use katana_markdown_engine::{
-    ContextAnchor, KmeDocument, KmeNode, KmeNodeId, MarkdownInput, MetadataDocument, MetadataEntry,
-    MetadataReconcileRequest, MetadataTarget, TargetResolution, TargetResolutionKind,
-    parse_markdown, reconcile_metadata,
-};
-use serde_json::json;
+mod html;
+mod metadata_demo;
+mod model;
+
+use katana_markdown_engine::{MarkdownInput, parse_markdown, reconcile_metadata};
+use metadata_demo::MetadataDemo;
+use model::{HarnessDocument, HarnessError};
 use std::path::{Path, PathBuf};
 
-const MARKDOWN_SOURCE: &str =
-    include_str!("../../../tests/fixtures/canonical/katana_sample_basic.md");
-const OLD_METADATA_SOURCE: &str = "# Title\n\nSame\n\nGone\n";
-const NEW_METADATA_SOURCE: &str = "# Title\n\nSame\n\nSame\n";
+const DEFAULT_KATANA_SAMPLE: &str =
+    "/Users/hiroyuki_furuno/works/private/katana/assets/fixtures/sample.md";
+const FALLBACK_FIXTURE: &str = "tests/fixtures/canonical/katana_sample.md";
 
-fn main() {
+fn main() -> Result<(), HarnessError> {
+    let markdown_path = markdown_path();
+    let source = std::fs::read_to_string(&markdown_path)
+        .map_err(|source| HarnessError::ReadFixture(markdown_path.clone(), source))?;
     let document = parse_markdown(MarkdownInput::from_content(
-        "tests/fixtures/canonical/katana_sample_basic.md",
-        MARKDOWN_SOURCE,
+        markdown_path.to_string_lossy().to_string(),
+        source.clone(),
     ))
-    .expect("manual harness fixture must parse");
-    let metadata_result = reconcile_metadata(metadata_request());
+    .map_err(HarnessError::Parse)?;
+    let metadata_result = reconcile_metadata(MetadataDemo::request());
+    let output = output_path()?;
 
-    print_markdown(MARKDOWN_SOURCE);
-    print_nodes(&document);
-    print_selected_node(&document);
-    print_metadata(&metadata_result.resolutions);
+    html::write(
+        &output,
+        &HarnessDocument::new(markdown_path, source, document, metadata_result),
+    )?;
+    println!("KME manual harness GUI:");
+    println!("{}", output.display());
+    open_browser(&output);
+    Ok(())
 }
 
-fn print_markdown(source: &str) {
-    println!("== Markdown入力 ==");
-    for line in source.lines().take(24) {
-        println!("{line}");
+fn markdown_path() -> PathBuf {
+    let explicit = std::env::args().nth(1).map(PathBuf::from);
+    if let Some(path) = explicit {
+        return path;
     }
-    println!();
-}
-
-fn print_nodes(document: &KmeDocument) {
-    println!("== KME node一覧 ==");
-    for (index, node) in document.nodes.iter().enumerate() {
-        println!(
-            "#{index:02} {:<18} bytes {}..{} lines {}:{}..{}:{}",
-            node.kind.label(),
-            node.source.byte_range.start,
-            node.source.byte_range.end,
-            node.source.line_column_range.start.line,
-            node.source.line_column_range.start.column,
-            node.source.line_column_range.end.line,
-            node.source.line_column_range.end.column
-        );
+    let katana_sample = PathBuf::from(DEFAULT_KATANA_SAMPLE);
+    if katana_sample.exists() {
+        return katana_sample;
     }
-    println!();
+    PathBuf::from(FALLBACK_FIXTURE)
 }
 
-fn print_selected_node(document: &KmeDocument) {
-    println!("== 選択node（初期選択: 0） ==");
-    let Some(node) = document.nodes.first() else {
-        println!("nodeなし");
+fn output_path() -> Result<PathBuf, HarnessError> {
+    let directory = std::env::current_dir()
+        .map_err(HarnessError::CurrentDirectory)?
+        .join("target")
+        .join("manual-harness");
+    std::fs::create_dir_all(&directory)
+        .map_err(|source| HarnessError::CreateDirectory(directory.clone(), source))?;
+    Ok(directory.join("index.html"))
+}
+
+fn open_browser(path: &Path) {
+    if std::env::var_os("KME_HARNESS_NO_OPEN").is_some() {
         return;
-    };
-    println!("id: {}", node.id.0);
-    println!("kind: {}", node.kind.label());
-    println!(
-        "source range: {}..{}",
-        node.source.byte_range.start, node.source.byte_range.end
-    );
-    println!(
-        "line-column: {}:{}..{}:{}",
-        node.source.line_column_range.start.line,
-        node.source.line_column_range.start.column,
-        node.source.line_column_range.end.line,
-        node.source.line_column_range.end.column
-    );
-    println!("fingerprint: {}", node.source.raw.fingerprint().value);
-    println!("raw snippet:");
-    println!("{}", node.source.raw.text);
-    println!();
-}
-
-fn print_metadata(resolutions: &[TargetResolution]) {
-    println!("== metadata解決状態 ==");
-    for resolution in resolutions {
-        println!("{}: {}", resolution.key, resolution_label(&resolution.kind));
     }
-}
-
-fn resolution_label(kind: &TargetResolutionKind) -> String {
-    match kind {
-        TargetResolutionKind::Resolved { node_id } => format!("Resolved -> {}", node_id.0),
-        TargetResolutionKind::Moved {
-            previous_node_id,
-            node_id,
-        } => {
-            format!("Moved {} -> {}", previous_node_id.0, node_id.0)
-        }
-        TargetResolutionKind::Conflict(conflict) => {
-            format!("Conflict candidates={}", conflict.candidate_node_ids.len())
-        }
-        TargetResolutionKind::Unresolved(unresolved) => {
-            format!("Unresolved {}", unresolved.reason)
-        }
-    }
-}
-
-fn metadata_request() -> MetadataReconcileRequest {
-    let old_document = parse_markdown(MarkdownInput::from_content(
-        "metadata-harness.md",
-        OLD_METADATA_SOURCE,
-    ))
-    .expect("old metadata fixture must parse");
-    let new_document = parse_markdown(MarkdownInput::from_content(
-        "metadata-harness.md",
-        NEW_METADATA_SOURCE,
-    ))
-    .expect("new metadata fixture must parse");
-    let markdown_path = PathBuf::from("metadata-harness.md");
-
-    MetadataReconcileRequest {
-        metadata: MetadataDocument {
-            markdown_path: markdown_path.clone(),
-            entries: metadata_entries(&old_document, &markdown_path),
-        },
-        old_document,
-        new_document,
-    }
-}
-
-fn metadata_entries(document: &KmeDocument, path: &Path) -> Vec<MetadataEntry> {
-    let title = node_containing(document, "# Title");
-    let same = node_containing(document, "Same");
-    let gone = node_containing(document, "Gone");
-
-    vec![
-        metadata_entry("resolved-title", path, title, title.id.clone()),
-        metadata_entry(
-            "moved-title",
-            path,
-            title,
-            KmeNodeId("old-title".to_string()),
-        ),
-        metadata_entry("unresolved-gone", path, gone, gone.id.clone()),
-        metadata_entry(
-            "conflict-same",
-            path,
-            same,
-            KmeNodeId("old-same".to_string()),
-        ),
-    ]
-}
-
-fn node_containing<'a>(document: &'a KmeDocument, expected: &str) -> &'a KmeNode {
-    document
-        .nodes
-        .iter()
-        .find(|node| node.source.raw.text.contains(expected))
-        .expect("manual harness metadata node must exist")
-}
-
-fn metadata_entry(key: &str, path: &Path, node: &KmeNode, node_id: KmeNodeId) -> MetadataEntry {
-    MetadataEntry {
-        key: key.to_string(),
-        target: MetadataTarget {
-            file_path: path.to_path_buf(),
-            node_id,
-            byte_range: node.source.byte_range,
-            line_column_range: node.source.line_column_range,
-            text_fingerprint: node.source.raw.fingerprint(),
-            context: ContextAnchor {
-                before: String::new(),
-                after: String::new(),
-            },
-        },
-        payload: json!({ "kind": "manual-harness" }),
+    let status = std::process::Command::new("open").arg(path).status();
+    if status.is_err() {
+        println!("ブラウザで上記HTMLを開いてください。");
     }
 }
