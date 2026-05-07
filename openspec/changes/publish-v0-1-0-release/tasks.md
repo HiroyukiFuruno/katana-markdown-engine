@@ -31,12 +31,14 @@
 
 ## Definition of Done: 実リリース
 
-- [ ] 全OpenSpec changeのtaskが完了している
+- [x] 実公開前に必要なOpenSpec changeのtaskが完了している
 - [x] `just release-check` が成功している
 - [ ] `v0.1.0` GitHub Releaseが作成されている
 - [ ] `v0.1.0` がcrates.ioへ公開されている
 - [ ] 公開後verifyが成功している
 - [ ] release後のbranch hygieneが完了している
+
+精度向上は `v0.1.0` の実公開条件に含めない。公開後に見つかったparser精度、metadata照合精度、同期anchor材料の追加は `v0.1.1` 以降で扱う。
 
 ## Verification
 

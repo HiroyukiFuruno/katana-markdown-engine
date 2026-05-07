@@ -33,6 +33,8 @@ If workflow job names change, update branch protection in the same change. A
 passing local target is not enough when GitHub no longer requires the matching
 check.
 
+2026-05-07時点で、GitHubの `master` ブランチ保護（branch protection）は上記4checkを必須にしている。
+
 ## Release Readiness
 
 KME has a release-readiness preflight and a manual `release` workflow for the

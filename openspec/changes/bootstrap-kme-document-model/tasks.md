@@ -38,7 +38,7 @@
 - [x] 1.4 `katana-ast-lint = "0.1.0"` をKME品質ゲートへ接続する
 - [x] 1.5 `just check`、`lefthook`、CI、repo-local skillを横展開する
 - [x] 1.6 GitHub repositoryを作成し、`master` をdefault branchにする
-- [ ] 1.7 KML相当のbranch protectionを `release-preflight.yml` push後に再設定する
+- [x] 1.7 KML相当のbranch protectionを `release-preflight.yml` push後に再設定する
 
 ### Definition of Done
 
@@ -174,3 +174,5 @@
 - [x] 7.3 `v0.1.0` までは全change完了前に公開しない条件を明記する
 - [x] 7.4 `release/v0.1.0` PR準備範囲と実リリース後に残す範囲を分離する
 - [ ] 7.5 PR merge後にGitHub Release、crates.io公開、公開後verify、branch hygieneを実施する
+
+7.5は実リリース後の作業である。`v0.1.0` の公開境界を広げる精度向上は含めない。

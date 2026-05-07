@@ -29,7 +29,7 @@ KMEは次を所有しない。
 
 | change | 状態 | release PRに含める内容 | PR後に残す内容 |
 | --- | --- | --- | --- |
-| `stabilize-release-readiness-gates` | 完了済み | なし | branch protectionの実設定確認 |
+| `stabilize-release-readiness-gates` | 完了済み | ブランチ保護（branch protection）の実設定確認 | check名が変わった場合の保護設定更新 |
 | `stabilize-canonical-fixtures` | 完了済み | なし | fixture更新が発生した場合の同期PR |
 | `finalize-metadata-resolution-contract` | 完了済み | なし | downstream採用時の追加用途fixture |
 | `lock-parser-adapter-strategy` | PR内で完了 | parser境界、contract test、parser評価メモ | parser engine差し替えは将来change |
@@ -44,6 +44,8 @@ release PR作成前に、次をすべて満たす。
 - `just release-check` が通っている
 - fixture testで代表構造、metadata、同期材料を検証できる
 - `cargo package --locked --allow-dirty --list` に開発用harnessが含まれていない
+- `master` のブランチ保護（branch protection）が `Test and Build (macos-latest)`、`Test and Build (ubuntu-latest)`、`Test and Build (windows-latest)`、`preflight` を必須checkにしている
+- `release/v0.1.0` から `master` へのrelease PRが作成済みで、必須checkが通っている
 
 実リリース前に、次をすべて満たす。
 
@@ -52,6 +54,21 @@ release PR作成前に、次をすべて満たす。
 - `v0.1.0` GitHub Release作成手順を実行できる
 - crates.io publish手順を実行できる
 - 公開後verify手順を実行できる
+
+## v0.1.0に含めない精度向上
+
+parser精度、対応Markdown構文の拡張、metadata照合の追加推定ロジック（heuristic）は `v0.1.0` へ混ぜない。
+
+`v0.1.0` はKMEの公開境界を固定するリリース（release）である。公開後にKDV、KLE、KatanAが採用した結果として見つかる精度改善は、`v0.1.1` 以降の小さなchangeで扱う。
+
+`v0.1.1` 候補:
+
+- canonical fixtureで見つかったsource range、line-column、raw snippet、fingerprintのズレ修正
+- footnote、image、link、HTML inline、math inlineの専用DTO化が必要になった場合の追加
+- metadata target移動判定の精度向上
+- editor-viewer同期で不足したanchor材料の追加
+
+ただし、KMEがviewer、export、同期制御を持たない境界は変えない。
 
 ### 1. `stabilize-release-readiness-gates`
 
