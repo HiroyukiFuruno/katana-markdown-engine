@@ -29,6 +29,14 @@ KME `Cargo.toml` のversionは `0.1.0` である。
 - merge時に `--admin` は使わない
 - merge後にbranch hygieneを行う
 
+## Decision
+
+`v0.1.0` の公開手順の正本は `docs/release-runbook.md` とする。
+
+GitHub Actionsの `release` workflowは手動実行とし、`publish_crate=false` ではrelease前検査だけを行う。`publish_crate=true` のときだけ、crates.io公開とGitHub Release作成を行う。
+
+release noteの正本は `docs/release-notes/v0.1.0.md` とする。
+
 ## Verification
 
 ```bash

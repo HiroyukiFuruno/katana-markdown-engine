@@ -30,3 +30,14 @@ KME SHALL verify GitHub Release and crates.io publication after `v0.1.0` is publ
 - **WHEN** the release workflow finishes
 - **THEN** KME verifies the GitHub Release target
 - **THEN** KME verifies that crates.io exposes `katana-markdown-engine` version `0.1.0`
+
+### Requirement: KME documents release execution before publication
+
+KME SHALL document release execution before `v0.1.0` is published.
+
+#### Scenario: Release PR is prepared
+
+- **WHEN** `release/v0.1.0` is prepared for `master`
+- **THEN** `docs/release-runbook.md` defines the release PR, secret, publication, failure, verify, and branch hygiene steps
+- **THEN** `docs/release-notes/v0.1.0.md` exists
+- **THEN** real publication tasks remain incomplete until after merge

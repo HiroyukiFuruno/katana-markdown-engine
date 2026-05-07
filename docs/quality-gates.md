@@ -35,9 +35,9 @@ check.
 
 ## Release Readiness
 
-KME has a release-readiness preflight, but crates.io publishing is not wired yet.
-Keep `just release-check` green locally. It runs `just check`,
-`cargo package --locked --allow-dirty` and
+KME has a release-readiness preflight and a manual `release` workflow for the
+actual publication step. Keep `just release-check` green locally. It runs
+`just check`, `cargo package --locked --allow-dirty` and
 `cargo publish --dry-run --locked --allow-dirty`.
 
 `just release-check` and the `preflight` workflow must stay aligned. KME is
@@ -47,4 +47,4 @@ boundary.
 
 Before `v0.1.0` publication, register `CARGO_REGISTRY_TOKEN` as a GitHub secret.
 Do not publish until the prerequisite OpenSpec changes in `docs/roadmap.md` are
-complete.
+complete. The release workflow must be dispatched from `master`.
