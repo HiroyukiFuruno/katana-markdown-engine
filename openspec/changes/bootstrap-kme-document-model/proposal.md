@@ -1,6 +1,6 @@
 ## Why
 
-KatanAのMarkdown preview、editor支援、exportは、現状では既存parserやrendererの都合に寄っている。
+KatanAのMarkdown viewer、editor支援、exportは、現状では既存parserやrendererの都合に寄っている。
 
 そのため、表（table/grid）、README badge、alert、description list、脚注、絵文字、diagram、math、metadata、PDFページング、LLM注釈を同じ文書仕様として扱いにくい。
 
@@ -31,7 +31,7 @@ KMEはMarkdownをHTMLへ変換する部品ではない。KMEは、KatanA ecosyst
 - table cell単位のsource range。
 - emoji shortcodeとUnicodeの専用node。
 - release workflowとcrates.io公開。
-- kdp、kle、kcf、KatanAへの組み込み。
+- KDV、KLE、KCF、KatanAへの組み込み。
 
 ## Capabilities
 

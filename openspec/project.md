@@ -4,19 +4,20 @@
 
 `katana-markdown-engine`（KME）は、KatanA ecosystem のMarkdown文書モデル、外部メタデータ（metadata）、位置解決を担うlibrary。
 
-KMEはHTML変換器ではない。KatanA、katana-document-preview、katana-language-editor、katana-canvas-forge が同じMarkdown解釈を共有するための中核である。
+KMEはHTML変換器ではない。KatanA、katana-document-viewer、katana-language-editor、katana-canvas-forge が同じMarkdown解釈を共有するための中核である。
 
 分離優先順位はP1。P0 `katana-ast-lint` による共通品質ゲートを前提にする。
 
 ## Design Principles
 
-- KMEはkcf、kdp、KatanA、editorへ依存しない。
+- KMEはKCF、KDV、KatanA、editorへ依存しない。
 - KME固有の一時AST lintを作らず、`katana-ast-lint` の共通ruleとadapterを使う。
 - 既存Markdown libraryのASTをpublic contractにしない。
 - Markdown本文へKatanA専用metadataを埋め込まない。
 - 現在KatanAで実現できているMarkdown挙動をv0互換ラインにする。
 - 絵文字は削除しない。Unicodeとshortcode情報を保持し、描画は利用側へ委譲する。
-- Mermaid、draw.io、PlantUML、mathの描画は非同期renderer interfaceへ委譲し、失敗時はraw表示へ戻す。
+- Mermaid、draw.io、PlantUML、mathの描画はKCFへ委譲できる構造として保持し、KMEでは描画しない。
+- editor-viewer同期制御はKatanAが所有する。KMEは同期制御を持たず、同期に使えるnode id、source range、line-column、raw snippet、fingerprintを返す。
 
 ## Canonical Fixtures
 
@@ -28,6 +29,6 @@ KMEはHTML変換器ではない。KatanA、katana-document-preview、katana-lang
 ## Consumers
 
 - KatanA
-- katana-document-preview
+- katana-document-viewer
 - katana-language-editor
 - katana-canvas-forge

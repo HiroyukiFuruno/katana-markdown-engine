@@ -2,7 +2,7 @@
 
 KME `Cargo.toml` のversionは `0.1.0` である。
 
-初回リリースでは、public DTO、metadata API、parser adapter境界、manual harness、downstream handoff条件が完了している必要がある。
+初回リリースでは、public DTO、metadata API、parser adapter境界、fixture test、downstream handoff条件が完了している必要がある。
 
 ## Goals
 
@@ -28,6 +28,14 @@ KME `Cargo.toml` のversionは `0.1.0` である。
 - `fix/vX.Y.Z-*`、`chore/vX.Y.Z-*`、`release-vX.Y.Z` は使わない
 - merge時に `--admin` は使わない
 - merge後にbranch hygieneを行う
+
+## Decision
+
+`v0.1.0` の公開手順の正本は `docs/release-runbook.md` とする。
+
+GitHub Actionsの `release` workflowは手動実行とし、`publish_crate=false` ではrelease前検査だけを行う。`publish_crate=true` のときだけ、crates.io公開とGitHub Release作成を行う。
+
+release noteの正本は `docs/release-notes/v0.1.0.md` とする。
 
 ## Verification
 
