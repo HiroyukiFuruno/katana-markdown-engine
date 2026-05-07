@@ -2,7 +2,6 @@ use katana_markdown_engine::{
     CodeBlockRole, DescriptionItem, DiagramKind, HtmlBlockRole, KmeDocument, KmeNode, KmeNodeKind,
     MarkdownInput, TableAlignment, parse_markdown,
 };
-
 #[test]
 fn parses_katana_sample_major_structures() {
     let document = canonical_document(
@@ -13,26 +12,22 @@ fn parses_katana_sample_major_structures() {
     assert_source_contract(&document);
     assert_heading_exists(&document, "1. HTML Centering");
     assert_heading_exists(&document, "15. Consecutive Diagrams");
-    assert!(
-        nodes(&document)
-            .iter()
-            .any(|node| matches!(node.kind, KmeNodeKind::HtmlBlock(HtmlBlockRole::BadgeRow)))
-    );
-    assert!(
-        nodes(&document)
-            .iter()
-            .any(|node| matches!(node.kind, KmeNodeKind::ThematicBreak))
-    );
-    assert!(
-        nodes(&document)
-            .iter()
-            .any(|node| matches!(node.kind, KmeNodeKind::BlockQuote))
-    );
-    assert!(
-        nodes(&document)
-            .iter()
-            .any(|node| matches!(node.kind, KmeNodeKind::List(_)))
-    );
+    assert!(has_node(&document, |kind| matches!(
+        kind,
+        KmeNodeKind::HtmlBlock(HtmlBlockRole::BadgeRow)
+    )));
+    assert!(has_node(&document, |kind| matches!(
+        kind,
+        KmeNodeKind::ThematicBreak
+    )));
+    assert!(has_node(&document, |kind| matches!(
+        kind,
+        KmeNodeKind::BlockQuote
+    )));
+    assert!(has_node(&document, |kind| matches!(
+        kind,
+        KmeNodeKind::List(_)
+    )));
     assert!(
         nodes(&document)
             .iter()
@@ -43,11 +38,9 @@ fn parses_katana_sample_major_structures() {
     assert_diagram_exists(&document, DiagramKind::Mermaid);
     assert_diagram_exists(&document, DiagramKind::PlantUml);
     assert_diagram_exists(&document, DiagramKind::DrawIo);
-    assert!(
-        nodes(&document)
-            .iter()
-            .any(|node| matches!(node.kind, KmeNodeKind::CodeBlock(CodeBlockRole::Math)))
-    );
+    assert!(has_node(&document, |kind| {
+        matches!(kind, KmeNodeKind::CodeBlock(CodeBlockRole::Math))
+    }));
 
     let alert_labels = alert_labels(&document);
     assert!(
@@ -184,6 +177,10 @@ fn assert_heading_exists(document: &KmeDocument, expected: &str) {
     assert!(nodes(document).iter().any(|node| {
         matches!(&node.kind, KmeNodeKind::Heading(heading) if heading.text.contains(expected))
     }));
+}
+
+fn has_node(document: &KmeDocument, predicate: impl Fn(&KmeNodeKind) -> bool) -> bool {
+    nodes(document).iter().any(|node| predicate(&node.kind))
 }
 
 fn assert_diagram_exists(document: &KmeDocument, expected: DiagramKind) {

@@ -97,19 +97,19 @@
 
 ### Definition of Ready
 
-- [ ] KatanA現行fixtureとbadge fixtureの必須node一覧がある
+- [x] KatanA現行fixtureとbadge fixtureの必須node一覧がある
 
 ### Tasks
 
-- [ ] 4.1 現行の初期parserを維持するか、parser engineを差し替えるかを評価する
-- [ ] 4.2 候補parserがOS依存emojiを壊さないか確認する
-- [ ] 4.3 parser内部型をpublic DTOへ出さないadapter境界を固定する
-- [ ] 4.4 table/grid、HTML badge、alert、description list、footnote、diagram、mathのparse contractをtestで固定する
+- [x] 4.1 現行の初期parserを維持するか、parser engineを差し替えるかを評価する
+- [x] 4.2 候補parserがOS依存emojiを壊さないか確認する
+- [x] 4.3 parser内部型をpublic DTOへ出さないadapter境界を固定する
+- [x] 4.4 table/grid、HTML badge、alert、description list、footnote、diagram、mathのparse contractをtestで固定する
 
 ### Definition of Done
 
-- [ ] parser engineを差し替えてもpublic DTOが壊れない
-- [ ] KatanA現行挙動を再現できないparserを選ばない
+- [x] parser engineを差し替えてもpublic DTOが壊れない
+- [x] KatanA現行挙動を再現できないparserを選ばない
 
 ## 5. Cross-repo Handoff
 
