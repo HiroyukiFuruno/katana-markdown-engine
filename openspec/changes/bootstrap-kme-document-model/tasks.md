@@ -52,7 +52,7 @@
 ### Definition of Ready
 
 - [x] 初期fixture contractが決まっている
-- [ ] canonical fixtureの取り込み方法が決まっている
+- [x] canonical fixtureの取り込み方法が決まっている
 
 ### Tasks
 
@@ -69,7 +69,7 @@
 
 - [x] KatanA現行fixtureの主要構造がKME nodeとして固定されている
 - [x] node種別、source range、raw snippet、fingerprintがfixture testで固定されている
-- [ ] KMEのpublic DTOだけでkdp / kle / kcf / KatanAが参照できる
+- [x] KMEのpublic DTOだけでkdp / kle / kcf / KatanAが参照できる
 
 ## 3. Metadata Target Resolution
 
@@ -115,21 +115,22 @@
 
 ### Definition of Ready
 
-- [ ] KME public DTOとmetadata APIのv0境界が固定されている
+- [x] KME public DTOとmetadata APIのv0境界が固定されている
 
 ### Tasks
 
-- [ ] 5.1 kdpへ渡すpreview inputとhit-test metadataを定義する
-- [ ] 5.2 kleへ渡すsave-time metadata sync contractを定義する
-- [ ] 5.3 KUWへ渡すmetadata/unresolved表示DTOを定義する
-- [ ] 5.4 kcfへ渡すexport/paging metadata contractを定義する
-- [ ] 5.5 KatanA統合で必要なfixture authorityとdependency version policyを定義する
+- [x] 5.1 kdpへ渡すpreview inputとhit-test metadataを定義する
+- [x] 5.2 kleへ渡すsave-time metadata sync contractを定義する
+- [x] 5.3 KUWへ渡すmetadata/unresolved表示DTOを定義する
+- [x] 5.4 kcfへ渡すexport/paging metadata contractを定義する
+- [x] 5.5 KatanA統合で必要なfixture authorityとdependency version policyを定義する
+- [x] 5.6 kcf pending解除条件を文書化する
 
 ### Definition of Done
 
-- [ ] downstream repoがKME内部parser型へ依存しない
-- [ ] downstream repoが独自metadata schemaを作らない
-- [ ] KCF pending解除条件が明確である
+- [x] downstream repoがKME内部parser型へ依存しない
+- [x] downstream repoが独自metadata schemaを作らない
+- [x] KCF pending解除条件が明確である
 
 ## 6. Verification
 
@@ -171,3 +172,5 @@
 - [x] 7.1 `docs/roadmap.md` へ `v0.1.0` までの順序とbranch戦略を明記する
 - [x] 7.2 未完了項目を小さなOpenSpec changeへ分割する
 - [x] 7.3 `v0.1.0` までは全change完了前に公開しない条件を明記する
+- [x] 7.4 `release/v0.1.0` PR準備範囲と実リリース後に残す範囲を分離する
+- [ ] 7.5 PR merge後にGitHub Release、crates.io公開、公開後verify、branch hygieneを実施する

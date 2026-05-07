@@ -91,12 +91,14 @@ KatanA本体はfixture authorityとintegrationを所有する。
 
 KatanAはKME、kdp、kle、kcf、KUWを統合するが、KME内部parser型へ依存しない。
 
-## 次セッションの最初の作業
+## v0.1.0 release PR後の作業
 
-1. KMEの次実装は、canonical fixture同期、table/grid cell source range、emoji nodeの順に進める。
-2. metadata conflict DTOを追加し、kleが独自状態で代替しないようにする。
-3. parser strategyを評価し、OS依存emojiやKatanA現行fixtureを壊すparser候補を除外する。
-4. KME public DTOとmetadata APIが固定されたら、kdp、kle、KUW、kcfへhandoffする。
+1. `release/v0.1.0` PRを `master` へmergeする。
+2. `docs/release-runbook.md` に沿ってGitHub Releaseとcrates.io公開を行う。
+3. 公開後verifyを実行する。
+4. release後のbranch hygieneを実行する。
+
+downstream handoffの正本は `docs/downstream-handoff.md` とする。
 
 ## 検証結果
 
