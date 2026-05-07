@@ -173,6 +173,6 @@
 - [x] 7.2 未完了項目を小さなOpenSpec changeへ分割する
 - [x] 7.3 `v0.1.0` までは全change完了前に公開しない条件を明記する
 - [x] 7.4 `release/v0.1.0` PR準備範囲と実リリース後に残す範囲を分離する
-- [ ] 7.5 PR merge後にGitHub Release、crates.io公開、公開後verify、branch hygieneを実施する
+- [x] 7.5 PR merge後にGitHub Release、crates.io公開、公開後verify、branch hygieneを実施する
 
 7.5は実リリース後の作業である。`v0.1.0` の公開境界を広げる精度向上は含めない。

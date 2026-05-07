@@ -33,10 +33,10 @@
 
 - [x] 実公開前に必要なOpenSpec changeのtaskが完了している
 - [x] `just release-check` が成功している
-- [ ] `v0.1.0` GitHub Releaseが作成されている
-- [ ] `v0.1.0` がcrates.ioへ公開されている
-- [ ] 公開後verifyが成功している
-- [ ] release後のbranch hygieneが完了している
+- [x] `v0.1.0` GitHub Releaseが作成されている
+- [x] `v0.1.0` がcrates.ioへ公開されている
+- [x] 公開後verifyが成功している
+- [x] release後のbranch hygieneが完了している
 
 精度向上は `v0.1.0` の実公開条件に含めない。公開後に見つかったparser精度、metadata照合精度、同期anchor材料の追加は `v0.1.1` 以降で扱う。
 
@@ -44,4 +44,4 @@
 
 - [x] `scripts/openspec validate "publish-v0-1-0-release" --strict`
 - [x] `just release-check`
-- [ ] 公開後verify
+- [x] 公開後verify
