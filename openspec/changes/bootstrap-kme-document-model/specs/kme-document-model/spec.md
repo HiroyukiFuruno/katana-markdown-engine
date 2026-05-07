@@ -36,42 +36,52 @@ KME MUST NOT expose third-party parser AST types as its public contract.
 
 #### Scenario: Downstream consumes KME model
 
-- **WHEN** kdp, kle, kcf, or KatanA consumes KME output
+- **WHEN** KDV、KLE、KCF、またはKatanAがKME outputを消費する
 - **THEN** it receives KME-owned DTOs
 - **THEN** it does not depend on Comrak, pulldown-cmark, markdown-rs, or vendor parser internals
 
 ### Requirement: KME is the cross-repository starting point
 
-KME SHALL define the document model and metadata contracts before downstream preview, editor, export, or integration work proceeds.
+KME SHALL define the document model and metadata contracts before downstream viewer, editor, export, external rendering, or integration work proceeds.
 
 #### Scenario: Downstream repository starts KME adoption
 
-- **WHEN** kdp, kle, kcf, or KatanA starts KME adoption work
+- **WHEN** KDV、KLE、KCF、またはKatanAがKME adoption workを始める
 - **THEN** KME public DTOs are available
 - **THEN** KME metadata target resolution is available when metadata behavior is required
 - **THEN** the downstream repository does not create its own document model or metadata schema as a substitute
 
-### Requirement: KCF remains pending until KME and widget boundaries stabilize
+### Requirement: KCF remains external-rendering focused after KDV owns export
 
-KME SHALL treat kcf integration as downstream work that waits for KME, KAL, KUW, preview, and editor contracts to stabilize.
+KME SHALL treat KCF as the owner of Mermaid, Draw.io, PlantUML, math, and other external rendering, while KDV owns viewer/export.
 
-#### Scenario: KCF export quality gate is resumed
+#### Scenario: KCF work resumes after KDV boundary is defined
 
-- **WHEN** kcf resumes KME-related export or GUI quality gate work
-- **THEN** KME document model scope is already defined
-- **THEN** KME metadata schema is already defined
-- **THEN** KUW or an explicit widget boundary is defined for shared UI behavior
-- **THEN** kcf does not define KME metadata or UI widget behavior on its own
+- **WHEN** KCF resumes KME-related work
+- **THEN** it treats KDV as the owner of HTML/PDF/PNG/JPG export
+- **THEN** it keeps existing export only until KDV provides equivalent behavior
+- **THEN** it does not define KME metadata, viewer, editor, or UI widget behavior on its own
+
+### Requirement: KME does not own editor-viewer synchronization control
+
+KME SHALL provide source mapping and fingerprint data that KatanA can use for synchronization without owning synchronization state or commands.
+
+#### Scenario: KatanA coordinates viewer and editor
+
+- **WHEN** KatanA aligns viewer and editor state
+- **THEN** KatanA uses KME node id, source range, line-column, raw snippet, and fingerprint
+- **THEN** KatanA sends commands to the viewer or editor
+- **THEN** KME does not know viewer state, editor state, scroll position, selection, or highlight state
 
 ### Requirement: KME tracks missing KUW as a planning risk
 
 KME SHALL track `katana-ui-widget` absence as a cross-repository planning risk.
 
-#### Scenario: Preview or KatanA integration needs shared UI parts
+#### Scenario: Viewer or KatanA integration needs shared UI parts
 
-- **WHEN** preview, metadata display, tabs, toolbar, copy, or edit affordance work is planned
+- **WHEN** viewer, metadata display, tabs, toolbar, copy, or edit affordance work is planned
 - **THEN** the work identifies whether it belongs in KUW
-- **THEN** KatanA or kdp does not silently absorb shared widget responsibilities
+- **THEN** KatanA or KDV does not silently absorb shared widget responsibilities
 
 ### Requirement: KME handoff is implementation-ready
 

@@ -1,15 +1,16 @@
 ## Why
 
-KMEのpublic DTOとmetadata APIが固定されたら、kdp、kle、kcf、KatanAへ受け渡す必要がある。
+KMEのpublic DTOとmetadata APIが固定されたら、KDV、KLE、KCF、KatanAへ受け渡す必要がある。
 
 受け渡し条件が曖昧だと、downstreamがKME parserを再実装したり、独自metadata schemaを作ったりする危険がある。
 
 ## What Changes
 
-- kdp、kle、kcf、KatanAが参照するKME public DTO境界をまとめる。
+- KDV、KLE、KCF、KatanAが参照するKME public DTO境界をまとめる。
 - KME内部parser型へ依存しない条件を明記する。
 - downstreamが独自metadata schemaを作らない条件を明記する。
-- kcf pending解除条件をKME側から固定する。
+- KDVがviewer/exportを担い、KCFが外部描画を担う条件をKME側から固定する。
+- KatanAがeditor-viewer同期制御を担い、KMEが同期材料だけを返す条件を明記する。
 
 ## Impact
 

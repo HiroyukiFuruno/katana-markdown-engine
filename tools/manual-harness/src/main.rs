@@ -27,7 +27,7 @@ fn main() -> Result<(), HarnessError> {
         &output,
         &HarnessDocument::new(markdown_path, source, document, metadata_result),
     )?;
-    println!("KME manual harness GUI:");
+    println!("KME manual harness:");
     println!("{}", output.display());
     open_browser(&output);
     Ok(())

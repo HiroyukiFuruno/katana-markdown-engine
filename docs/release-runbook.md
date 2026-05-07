@@ -16,7 +16,7 @@ git push -u origin release/v0.1.0
 gh pr create --base master --head release/v0.1.0
 ```
 
-PR本文には、実公開が未実施であること、`just release-check` の結果、`just harness-up` の確認結果を明記する。
+PR本文には、実公開が未実施であること、`just release-check` の結果、fixture testと任意の構造確認結果を明記する。
 
 ## secret登録
 
@@ -40,7 +40,7 @@ just release-check
 just harness-up
 ```
 
-`docs/release-readiness/v0.1.0-manual-harness.md` がPASSになっていることを確認する。
+`just harness-up` は任意の構造確認補助である。release判断はfixture testと `just release-check` を正本にする。
 
 ## GitHub Actionsでの公開
 

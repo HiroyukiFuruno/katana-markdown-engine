@@ -2,7 +2,7 @@
 
 KME `Cargo.toml` のversionは `0.1.0` である。
 
-初回リリースでは、public DTO、metadata API、parser adapter境界、manual harness、downstream handoff条件が完了している必要がある。
+初回リリースでは、public DTO、metadata API、parser adapter境界、fixture test、downstream handoff条件が完了している必要がある。
 
 ## Goals
 

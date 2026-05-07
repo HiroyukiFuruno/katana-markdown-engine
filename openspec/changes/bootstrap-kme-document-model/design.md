@@ -2,7 +2,7 @@
 
 KME v0は、CommonMark完全準拠を先に狙わない。
 
-優先するのは、現在KatanAで実現できているMarkdown挙動を文書モデルとして失わず、preview、editor、exportが同じ解釈を共有できることである。
+優先するのは、現在KatanAで実現できているMarkdown挙動を文書モデルとして失わず、viewer、editor、exportが同じ解釈を共有できることである。
 
 KMEはP1の分離対象であり、P0 `katana-ast-lint` の共通品質ゲートを前提にする。
 
@@ -21,7 +21,7 @@ KMEはP1の分離対象であり、P0 `katana-ast-lint` の共通品質ゲート
 
 - KME v0でMarkdown全仕様を完全実装すること。
 - HTML/PDF/PNG/JPG出力をKMEが直接担当すること。
-- Floem、egui、kcf、kdp、kle、KatanAへ依存すること。
+- Floem、egui、KCF、KDV、KLE、KatanAへ依存すること。
 - metadataをMarkdown本文へ埋め込むこと。
 - CLIを提供すること。
 

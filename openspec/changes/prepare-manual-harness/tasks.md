@@ -3,13 +3,13 @@
 ## Definition of Ready
 
 - [x] KME本体はlibrary-onlyを維持する方針である
-- [x] release前に目視できる検証環境が必要である
+- [x] release前の正本検証はfixture testで行う方針である
 - [x] KCU/KCFの `just harness-up` を参考にする方針である
 
 ## Tasks
 
 - [x] 1.1 harnessを公開crateへ含めない配置に決める
-- [x] 1.2 `just harness-up` の入口を追加する
+- [x] 1.2 `just harness-up` の補助入口を追加する
 - [x] 1.3 Markdown本文とKME node一覧を表示する
 - [x] 1.4 選択nodeのsource range、line-column、raw snippet、fingerprintを表示する
 - [x] 1.5 metadata解決状態を表示する
@@ -19,7 +19,7 @@
 
 ## Definition of Done
 
-- [x] `just harness-up` で目視確認環境が起動する
+- [x] `just harness-up` で構造確認補助環境が起動する
 - [x] KME本体に製品binary targetが追加されていない
 - [x] fixtureごとの目視確認手順がある
 - [x] release前品質ゲートとして扱える
