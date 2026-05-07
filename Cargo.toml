@@ -9,6 +9,11 @@ repository = "https://github.com/HiroyukiFuruno/katana-markdown-engine"
 readme = "README.md"
 keywords = ["katana", "markdown", "document-model", "metadata"]
 categories = ["parser-implementations"]
+exclude = ["tools/**"]
+
+[workspace]
+members = ["tools/manual-harness"]
+resolver = "3"
 
 [lib]
 name = "katana_markdown_engine"

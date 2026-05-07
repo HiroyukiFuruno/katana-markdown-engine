@@ -32,10 +32,20 @@ KMEは製品UIを持たない。
 
 これは手動品質ゲートであり、表示そのものを製品仕様にはしない。
 
+## Decision
+
+`v0.1.0` では、開発用のターミナル画面としてharnessを提供する。
+
+配置は `tools/manual-harness` とし、KME本体へ製品binary targetは追加しない。公開crateには `tools/**` を含めない。
+
+目視確認結果は `docs/release-readiness/<version>-manual-harness.md` に記録する。
+
 ## Verification
 
 ```bash
 cd /Users/hiroyuki_furuno/works/private/katana-markdown-engine
 scripts/openspec validate "prepare-manual-harness" --strict
+just harness-check
 just harness-up
+cargo package --locked --allow-dirty --list
 ```

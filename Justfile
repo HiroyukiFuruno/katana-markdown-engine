@@ -12,3 +12,4 @@ help:
     @just --list --unsorted
 
 import 'just/quality.just'
+import 'just/harness.just'
