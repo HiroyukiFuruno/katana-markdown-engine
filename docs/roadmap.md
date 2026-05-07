@@ -22,6 +22,36 @@ KMEは次を所有しない。
 
 ## v0.1.0までのchange順序
 
+## v0.1.0 release PR準備チェック表
+
+この表は、`release/v0.1.0` から `master` へ出すrelease PRで何を完了し、何をmerge後に残すかを固定する。
+
+| change | 状態 | release PRに含める内容 | PR後に残す内容 |
+| --- | --- | --- | --- |
+| `stabilize-release-readiness-gates` | 完了済み | なし | branch protectionの実設定確認 |
+| `stabilize-canonical-fixtures` | 完了済み | なし | fixture更新が発生した場合の同期PR |
+| `finalize-metadata-resolution-contract` | 完了済み | なし | downstream採用時の追加用途fixture |
+| `lock-parser-adapter-strategy` | PR内で完了 | parser境界、contract test、parser評価メモ | parser engine差し替えは将来change |
+| `prepare-manual-harness` | PR内で完了 | `just harness-up`、目視手順、package混入確認 | GUI化は将来change |
+| `prepare-downstream-handoff-contract` | PR内で完了 | downstream受け渡し境界、KCF pending解除条件 | downstream repo側の実装PR |
+| `publish-v0-1-0-release` | PR準備のみ | runbook、secret、PR、公開、verify、branch hygiene手順 | GitHub Release、crates.io公開、公開後verify、branch hygiene |
+
+release PR作成前に、次をすべて満たす。
+
+- active changeのOpenSpec検証が通っている
+- `just check` が通っている
+- `just release-check` が通っている
+- `just harness-up` で代表fixtureを目視確認できる
+- `cargo package --locked --allow-dirty --list` に開発用harnessが含まれていない
+
+実リリース前に、次をすべて満たす。
+
+- release PRが `master` へmergeされている
+- `CARGO_REGISTRY_TOKEN` がGitHub secretとして登録されている
+- `v0.1.0` GitHub Release作成手順を実行できる
+- crates.io publish手順を実行できる
+- 公開後verify手順を実行できる
+
 ### 1. `stabilize-release-readiness-gates`
 
 CI、release前検査、branch protection、`just check` / `release-check` の対応を固定する。
