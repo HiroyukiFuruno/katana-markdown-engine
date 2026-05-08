@@ -1,6 +1,6 @@
 use katana_markdown_engine::{
-    ContextAnchor, KmeDocument, KmeNode, KmeNodeId, MarkdownInput, MetadataDocument, MetadataEntry,
-    MetadataReconcileRequest, MetadataTarget, parse_markdown,
+    ContextAnchor, KmeDocument, KmeMarkdownEngine, KmeNode, KmeNodeId, MarkdownInput,
+    MetadataDocument, MetadataEntry, MetadataReconcileRequest, MetadataTarget,
 };
 use serde_json::json;
 use std::path::{Path, PathBuf};
@@ -12,12 +12,12 @@ pub struct MetadataDemo;
 
 impl MetadataDemo {
     pub fn request() -> MetadataReconcileRequest {
-        let old_document = parse_markdown(MarkdownInput::from_content(
+        let old_document = KmeMarkdownEngine::parse(MarkdownInput::from_content(
             "metadata-harness.md",
             OLD_METADATA_SOURCE,
         ))
         .expect("old metadata fixture must parse");
-        let new_document = parse_markdown(MarkdownInput::from_content(
+        let new_document = KmeMarkdownEngine::parse(MarkdownInput::from_content(
             "metadata-harness.md",
             NEW_METADATA_SOURCE,
         ))

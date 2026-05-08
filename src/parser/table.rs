@@ -1,36 +1,40 @@
 use crate::{SourceSpan, TableAlignment, TableCell, TableNode, TableRow};
 
-pub(crate) fn table_node(rows: Vec<TableRow>) -> TableNode {
-    let alignments = rows
-        .get(1)
-        .map(|row| row.cells.iter().map(|cell| alignment(&cell.text)).collect())
-        .unwrap_or_default();
-    TableNode { alignments, rows }
-}
+pub(crate) struct TableParser;
 
-pub(crate) fn table_row(
-    line: &str,
-    line_start: usize,
-    cell_span: impl Fn(usize, usize) -> SourceSpan,
-) -> TableRow {
-    TableRow {
-        cells: split_table_cell_ranges(line)
-            .into_iter()
-            .map(|range| {
-                let text = line[range.start..range.end].trim().to_string();
-                TableCell {
-                    text,
-                    source: cell_span(line_start + range.start, line_start + range.end),
-                }
-            })
-            .collect(),
+impl TableParser {
+    pub(crate) fn table_node(rows: Vec<TableRow>) -> TableNode {
+        let alignments = rows
+            .get(1)
+            .map(|row| row.cells.iter().map(|cell| alignment(&cell.text)).collect())
+            .unwrap_or_default();
+        TableNode { alignments, rows }
     }
-}
 
-pub(crate) fn table_separator(line: &str) -> bool {
-    split_table_cells(line)
-        .iter()
-        .all(|cell| cell.chars().all(|it| matches!(it, '-' | ':' | ' ')))
+    pub(crate) fn table_row(
+        line: &str,
+        line_start: usize,
+        cell_span: impl Fn(usize, usize) -> SourceSpan,
+    ) -> TableRow {
+        TableRow {
+            cells: split_table_cell_ranges(line)
+                .into_iter()
+                .map(|range| {
+                    let text = line[range.start..range.end].trim().to_string();
+                    TableCell {
+                        text,
+                        source: cell_span(line_start + range.start, line_start + range.end),
+                    }
+                })
+                .collect(),
+        }
+    }
+
+    pub(crate) fn table_separator(line: &str) -> bool {
+        split_table_cells(line)
+            .iter()
+            .all(|cell| cell.chars().all(|it| matches!(it, '-' | ':' | ' ')))
+    }
 }
 
 struct CellRange {

@@ -1,9 +1,13 @@
 use crate::model::{HarnessDocument, HarnessError, HarnessNode};
 use std::path::Path;
 
-pub fn write(path: &Path, document: &HarnessDocument) -> Result<(), HarnessError> {
-    std::fs::write(path, render(document))
-        .map_err(|source| HarnessError::WriteHtml(path.to_path_buf(), source))
+pub struct HtmlRenderer;
+
+impl HtmlRenderer {
+    pub fn write(path: &Path, document: &HarnessDocument) -> Result<(), HarnessError> {
+        std::fs::write(path, render(document))
+            .map_err(|source| HarnessError::WriteHtml(path.to_path_buf(), source))
+    }
 }
 
 fn render(document: &HarnessDocument) -> String {

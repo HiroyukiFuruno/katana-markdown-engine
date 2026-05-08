@@ -1,5 +1,5 @@
-use super::block;
-use super::emoji;
+use super::block::BlockParser;
+use super::emoji::EmojiParser;
 use super::line_index::{LineIndex, SourceLine};
 use crate::{
     KmeDocument, KmeError, KmeNode, KmeNodeKind, MarkdownInput, SourceSpan, TextFingerprint,
@@ -69,7 +69,7 @@ impl<'a> ParserCursor<'a> {
 
     fn node_kind(&mut self) -> KmeNodeKind {
         let line = self.current().text.as_str();
-        if let Some(kind) = block::heading(line) {
+        if let Some(kind) = BlockParser::heading(line) {
             self.line += 1;
             return kind;
         }
@@ -88,7 +88,7 @@ impl<'a> ParserCursor<'a> {
         if self.is_description_start() {
             return self.description_list();
         }
-        if block::unordered_list_line(line) || block::ordered_list_line(line) {
+        if BlockParser::unordered_list_line(line) || BlockParser::ordered_list_line(line) {
             return self.list();
         }
         if line.trim() == "---" {
@@ -121,7 +121,7 @@ impl<'a> ParserCursor<'a> {
             return Vec::new();
         }
         let base = span.byte_range.start;
-        emoji::emoji_nodes(&span.raw.text, |start, end| {
+        EmojiParser::emoji_nodes(&span.raw.text, |start, end| {
             self.index
                 .source_span_for_byte_range(self.source, base + start, base + end)
         })

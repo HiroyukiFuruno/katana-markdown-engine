@@ -1,10 +1,11 @@
 use katana_markdown_engine::{
-    CodeBlockRole, DiagramKind, HtmlBlockRole, KmeNode, KmeNodeKind, MarkdownInput, parse_markdown,
+    CodeBlockRole, DiagramKind, HtmlBlockRole, KmeMarkdownEngine, KmeNode, KmeNodeKind,
+    MarkdownInput,
 };
 
 #[test]
 fn parses_sample_fixture_into_renderer_neutral_nodes() {
-    let document = parse_markdown(MarkdownInput::from_content(
+    let document = KmeMarkdownEngine::parse(MarkdownInput::from_content(
         "tests/fixtures/sample.md",
         include_str!("fixtures/sample.md"),
     ))
@@ -47,7 +48,7 @@ fn parses_sample_fixture_into_renderer_neutral_nodes() {
 
 #[test]
 fn parses_alert_blocks_without_erasing_labels() {
-    let document = parse_markdown(MarkdownInput::from_content(
+    let document = KmeMarkdownEngine::parse(MarkdownInput::from_content(
         "tests/fixtures/alerts.md",
         include_str!("fixtures/alerts.md"),
     ))
@@ -67,7 +68,7 @@ fn parses_alert_blocks_without_erasing_labels() {
 
 #[test]
 fn parses_description_list_as_owned_node() {
-    let document = parse_markdown(MarkdownInput::from_content(
+    let document = KmeMarkdownEngine::parse(MarkdownInput::from_content(
         "tests/fixtures/description_list.md",
         include_str!("fixtures/description_list.md"),
     ))
@@ -83,7 +84,7 @@ fn parses_description_list_as_owned_node() {
 
 #[test]
 fn keeps_table_cell_source_ranges() {
-    let document = parse_markdown(MarkdownInput::from_content(
+    let document = KmeMarkdownEngine::parse(MarkdownInput::from_content(
         "inline-table.md",
         "| Name | Value |\n| :--- | ---: |\n| Alpha | 123 |\n",
     ))
@@ -105,7 +106,7 @@ fn keeps_table_cell_source_ranges() {
 
 #[test]
 fn keeps_shortcode_and_unicode_emoji_as_child_nodes() {
-    let document = parse_markdown(MarkdownInput::from_content(
+    let document = KmeMarkdownEngine::parse(MarkdownInput::from_content(
         "emoji.md",
         "# Title :sparkles:\n\nHello 🚀\n",
     ))

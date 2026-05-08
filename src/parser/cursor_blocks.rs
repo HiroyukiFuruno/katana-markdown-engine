@@ -1,11 +1,11 @@
-use super::block;
+use super::block::BlockParser;
 use super::engine::ParserCursor;
-use super::table;
+use super::table::TableParser;
 use crate::KmeNodeKind;
 
 impl ParserCursor<'_> {
     pub(super) fn code_block(&mut self) -> KmeNodeKind {
-        let role = block::code_block_role(&self.current().text);
+        let role = BlockParser::code_block_role(&self.current().text);
         self.line += 1;
         while self.line < self.index.lines().len() {
             let text = self.current().text.trim_start().to_string();
@@ -24,20 +24,24 @@ impl ParserCursor<'_> {
             self.line += 1;
         }
         let raw = self.raw_text(start, self.line);
-        KmeNodeKind::HtmlBlock(block::html_role(&raw))
+        KmeNodeKind::HtmlBlock(BlockParser::html_role(&raw))
     }
 
     pub(super) fn table(&mut self) -> KmeNodeKind {
         let mut rows = Vec::new();
         while self.line < self.index.lines().len() && self.current().text.contains('|') {
             let line = self.current();
-            rows.push(table::table_row(&line.text, line.start, |start, end| {
-                self.index
-                    .source_span_for_byte_range(self.source, start, end)
-            }));
+            rows.push(TableParser::table_row(
+                &line.text,
+                line.start,
+                |start, end| {
+                    self.index
+                        .source_span_for_byte_range(self.source, start, end)
+                },
+            ));
             self.line += 1;
         }
-        KmeNodeKind::Table(table::table_node(rows))
+        KmeNodeKind::Table(TableParser::table_node(rows))
     }
 
     pub(super) fn block_quote(&mut self) -> KmeNodeKind {
@@ -48,7 +52,7 @@ impl ParserCursor<'_> {
             lines.push(self.current().text.clone());
             self.line += 1;
         }
-        block::alert_label(&lines)
+        BlockParser::alert_label(&lines)
             .map(|label| KmeNodeKind::Alert { label })
             .unwrap_or(KmeNodeKind::BlockQuote)
     }
@@ -62,7 +66,7 @@ impl ParserCursor<'_> {
             self.skip_description_gap();
         }
         KmeNodeKind::DescriptionList {
-            items: block::description_items(&lines),
+            items: BlockParser::description_items(&lines),
         }
     }
 
@@ -70,13 +74,13 @@ impl ParserCursor<'_> {
         let mut lines = Vec::new();
         while self.line < self.index.lines().len() {
             let text = &self.current().text;
-            if !block::unordered_list_line(text) && !block::ordered_list_line(text) {
+            if !BlockParser::unordered_list_line(text) && !BlockParser::ordered_list_line(text) {
                 break;
             }
             lines.push(text.clone());
             self.line += 1;
         }
-        KmeNodeKind::List(block::list_node(&lines))
+        KmeNodeKind::List(BlockParser::list_node(&lines))
     }
 
     pub(super) fn paragraph(&mut self) -> KmeNodeKind {
@@ -87,7 +91,7 @@ impl ParserCursor<'_> {
     pub(super) fn is_table_start(&self) -> bool {
         self.line + 1 < self.index.lines().len()
             && self.current().text.contains('|')
-            && table::table_separator(&self.index.lines()[self.line + 1].text)
+            && TableParser::table_separator(&self.index.lines()[self.line + 1].text)
     }
 
     pub(super) fn is_description_start(&self) -> bool {

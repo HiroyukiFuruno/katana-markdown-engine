@@ -27,18 +27,22 @@ pub use metadata::{
 };
 pub use source::{ByteRange, LineColumn, LineColumnRange, RawSnippet, SourceSpan, TextFingerprint};
 
-pub fn parse_markdown(input: MarkdownInput) -> Result<KmeDocument, KmeError> {
-    parser::MarkdownParser::new().parse(input)
-}
+pub struct KmeMarkdownEngine;
 
-pub fn reconcile_metadata_targets(
-    old_document: &KmeDocument,
-    new_document: &KmeDocument,
-    metadata: &MetadataDocument,
-) -> Vec<TargetResolution> {
-    MetadataResolver::new().reconcile(old_document, new_document, metadata)
-}
+impl KmeMarkdownEngine {
+    pub fn parse(input: MarkdownInput) -> Result<KmeDocument, KmeError> {
+        parser::MarkdownParser::new().parse(input)
+    }
 
-pub fn reconcile_metadata(request: MetadataReconcileRequest) -> MetadataReconcileResult {
-    MetadataResolver::new().reconcile_request(request)
+    pub fn reconcile_targets(
+        old_document: &KmeDocument,
+        new_document: &KmeDocument,
+        metadata: &MetadataDocument,
+    ) -> Vec<TargetResolution> {
+        MetadataResolver::new().reconcile(old_document, new_document, metadata)
+    }
+
+    pub fn reconcile(request: MetadataReconcileRequest) -> MetadataReconcileResult {
+        MetadataResolver::new().reconcile_request(request)
+    }
 }

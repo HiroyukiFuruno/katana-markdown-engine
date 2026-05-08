@@ -1,12 +1,16 @@
 use crate::{EmojiNode, KmeNode, KmeNodeKind, SourceSpan};
 
-pub(crate) fn emoji_nodes(
-    raw: &str,
-    span_for_match: impl Fn(usize, usize) -> SourceSpan,
-) -> Vec<KmeNode> {
-    let mut nodes = shortcode_emoji_nodes(raw, &span_for_match);
-    nodes.extend(unicode_emoji_nodes(raw, span_for_match));
-    nodes
+pub(crate) struct EmojiParser;
+
+impl EmojiParser {
+    pub(crate) fn emoji_nodes(
+        raw: &str,
+        span_for_match: impl Fn(usize, usize) -> SourceSpan,
+    ) -> Vec<KmeNode> {
+        let mut nodes = shortcode_emoji_nodes(raw, &span_for_match);
+        nodes.extend(unicode_emoji_nodes(raw, span_for_match));
+        nodes
+    }
 }
 
 fn shortcode_emoji_nodes(

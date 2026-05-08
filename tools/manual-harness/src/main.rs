@@ -2,10 +2,11 @@ mod html;
 mod metadata_demo;
 mod model;
 
-use katana_markdown_engine::{MarkdownInput, parse_markdown, reconcile_metadata};
+use html::HtmlRenderer;
+use katana_markdown_engine::{KmeMarkdownEngine, MarkdownInput};
 use metadata_demo::MetadataDemo;
 use model::{HarnessDocument, HarnessError};
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 const DEFAULT_KATANA_SAMPLE: &str =
     "/Users/hiroyuki_furuno/works/private/katana/assets/fixtures/sample.md";
@@ -15,21 +16,20 @@ fn main() -> Result<(), HarnessError> {
     let markdown_path = markdown_path();
     let source = std::fs::read_to_string(&markdown_path)
         .map_err(|source| HarnessError::ReadFixture(markdown_path.clone(), source))?;
-    let document = parse_markdown(MarkdownInput::from_content(
+    let document = KmeMarkdownEngine::parse(MarkdownInput::from_content(
         markdown_path.to_string_lossy().to_string(),
         source.clone(),
     ))
     .map_err(HarnessError::Parse)?;
-    let metadata_result = reconcile_metadata(MetadataDemo::request());
+    let metadata_result = KmeMarkdownEngine::reconcile(MetadataDemo::request());
     let output = output_path()?;
 
-    html::write(
+    HtmlRenderer::write(
         &output,
         &HarnessDocument::new(markdown_path, source, document, metadata_result),
     )?;
     println!("KME manual harness:");
     println!("{}", output.display());
-    open_browser(&output);
     Ok(())
 }
 
@@ -53,14 +53,4 @@ fn output_path() -> Result<PathBuf, HarnessError> {
     std::fs::create_dir_all(&directory)
         .map_err(|source| HarnessError::CreateDirectory(directory.clone(), source))?;
     Ok(directory.join("index.html"))
-}
-
-fn open_browser(path: &Path) {
-    if std::env::var_os("KME_HARNESS_NO_OPEN").is_some() {
-        return;
-    }
-    let status = std::process::Command::new("open").arg(path).status();
-    if status.is_err() {
-        println!("ブラウザで上記HTMLを開いてください。");
-    }
 }

@@ -12,9 +12,9 @@ KMEは描画、export、editor-viewer同期制御を持たない。同期制御�
 
 downstreamが使ってよい入口は次に限定する。
 
-- `parse_markdown(MarkdownInput) -> Result<KmeDocument, KmeError>`
-- `reconcile_metadata(MetadataReconcileRequest) -> MetadataReconcileResult`
-- `reconcile_metadata_targets(&KmeDocument, &KmeDocument, &MetadataDocument) -> Vec<TargetResolution>`
+- `KmeMarkdownEngine::parse(MarkdownInput) -> Result<KmeDocument, KmeError>`
+- `KmeMarkdownEngine::reconcile(MetadataReconcileRequest) -> MetadataReconcileResult`
+- `KmeMarkdownEngine::reconcile_targets(&KmeDocument, &KmeDocument, &MetadataDocument) -> Vec<TargetResolution>`
 
 downstreamが参照してよいDTOは次に限定する。
 
@@ -55,7 +55,7 @@ viewer表示とexportは、KDV内の同じrender pipelineを使う。
 
 kleは保存時に、old document、new document、metadata documentをKMEへ渡す。
 
-保存時の標準入口は `reconcile_metadata(MetadataReconcileRequest)` とする。
+保存時の標準入口は `KmeMarkdownEngine::reconcile(MetadataReconcileRequest)` とする。
 
 kleは `TargetResolutionKind` を次の状態として扱う。
 

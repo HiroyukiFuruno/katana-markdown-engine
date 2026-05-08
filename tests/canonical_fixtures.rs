@@ -1,6 +1,6 @@
 use katana_markdown_engine::{
-    CodeBlockRole, DescriptionItem, DiagramKind, HtmlBlockRole, KmeDocument, KmeNode, KmeNodeKind,
-    MarkdownInput, TableAlignment, parse_markdown,
+    CodeBlockRole, DescriptionItem, DiagramKind, HtmlBlockRole, KmeDocument, KmeMarkdownEngine,
+    KmeNode, KmeNodeKind, MarkdownInput, TableAlignment,
 };
 #[test]
 fn parses_katana_sample_major_structures() {
@@ -150,7 +150,8 @@ fn parses_canonical_description_list_fixture() {
 }
 
 fn canonical_document(path: &str, source: &str) -> KmeDocument {
-    parse_markdown(MarkdownInput::from_content(path, source)).expect("canonical fixture must parse")
+    KmeMarkdownEngine::parse(MarkdownInput::from_content(path, source))
+        .expect("canonical fixture must parse")
 }
 
 fn nodes(document: &KmeDocument) -> Vec<&KmeNode> {

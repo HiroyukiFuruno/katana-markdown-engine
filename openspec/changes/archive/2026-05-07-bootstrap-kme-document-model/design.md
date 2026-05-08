@@ -32,8 +32,8 @@ KMEはP1の分離対象であり、P0 `katana-ast-lint` の共通品質ゲート
 - crate: `katana-markdown-engine`
 - library name: `katana_markdown_engine`
 - public entry point:
-  - `parse_markdown(MarkdownInput) -> Result<KmeDocument, KmeError>`
-  - `reconcile_metadata_targets(old, new, metadata) -> Vec<TargetResolution>`
+  - `KmeMarkdownEngine::parse(MarkdownInput) -> Result<KmeDocument, KmeError>`
+  - `KmeMarkdownEngine::reconcile_targets(old, new, metadata) -> Vec<TargetResolution>`
 - module boundary:
   - `document`: public document DTO
   - `source`: source mapping DTO

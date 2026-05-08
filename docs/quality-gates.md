@@ -15,8 +15,8 @@
 
 ## AST Lint
 
-KME uses `katana-ast-lint` as the shared governance gate. The repository-specific
-entry point is `tests/repository_ast_lint.rs`.
+KMEは共有品質ゲートとして `katana-ast-lint` を使う。repository側の実行入口は
+`tests/repository_ast_lint.rs` の1行KAL runnerとする。
 
 KME must not introduce a separate local lint baseline to avoid the shared rules.
 

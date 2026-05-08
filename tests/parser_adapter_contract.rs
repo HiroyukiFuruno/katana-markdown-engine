@@ -1,6 +1,6 @@
 use katana_markdown_engine::{
-    CodeBlockRole, DescriptionItem, DiagramKind, HtmlBlockRole, KmeDocument, KmeNodeKind,
-    MarkdownInput, TableAlignment, parse_markdown,
+    CodeBlockRole, DescriptionItem, DiagramKind, HtmlBlockRole, KmeDocument, KmeMarkdownEngine,
+    KmeNodeKind, MarkdownInput, TableAlignment,
 };
 
 #[test]
@@ -97,7 +97,7 @@ f(x) = x^2
 }
 
 fn parse(path: &str, source: &str) -> KmeDocument {
-    parse_markdown(MarkdownInput::from_content(path, source)).unwrap()
+    KmeMarkdownEngine::parse(MarkdownInput::from_content(path, source)).unwrap()
 }
 
 fn has_html_role(document: &KmeDocument, expected: HtmlBlockRole) -> bool {

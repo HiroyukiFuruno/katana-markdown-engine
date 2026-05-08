@@ -22,11 +22,14 @@ impl TextFingerprint {
 }
 
 fn to_hex(bytes: &[u8]) -> String {
+    const HIGH_NIBBLE_SHIFT: u8 = 4;
+    const LOW_NIBBLE_MASK: u8 = 0x0f;
+    const HEX_CHARS_PER_BYTE: usize = 2;
     const HEX: &[u8; 16] = b"0123456789abcdef";
-    let mut output = String::with_capacity(bytes.len() * 2);
+    let mut output = String::with_capacity(bytes.len() * HEX_CHARS_PER_BYTE);
     for byte in bytes {
-        output.push(HEX[(byte >> 4) as usize] as char);
-        output.push(HEX[(byte & 0x0f) as usize] as char);
+        output.push(HEX[(byte >> HIGH_NIBBLE_SHIFT) as usize] as char);
+        output.push(HEX[(byte & LOW_NIBBLE_MASK) as usize] as char);
     }
     output
 }

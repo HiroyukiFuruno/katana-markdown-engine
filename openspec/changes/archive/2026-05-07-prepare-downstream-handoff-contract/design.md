@@ -29,7 +29,7 @@ downstream連携は、KME public DTOとmetadata APIが固定されてから始�
 
 受け渡し境界の正本は `docs/downstream-handoff.md` とする。
 
-downstreamが使ってよい入口は、`parse_markdown`、`reconcile_metadata`、`reconcile_metadata_targets` に限定する。
+downstreamが使ってよい入口は、`KmeMarkdownEngine::parse`、`KmeMarkdownEngine::reconcile`、`KmeMarkdownEngine::reconcile_targets` に限定する。
 
 KCFの新規export計画はKDVへ移譲する。KCF側で維持する既存exportは、KDVが同等機能を持った後に削除する。
 
